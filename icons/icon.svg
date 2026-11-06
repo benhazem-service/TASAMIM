@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="50%" stop-color="#1e40af"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde68a"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- خلفية الأيقونة بحواف ناعمة -->
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#bgGrad)"/>
+  <rect x="28" y="28" width="456" height="456" rx="100" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="4"/>
+
+  <!-- شبكة قياس خلفية خفيفة -->
+  <g stroke="rgba(255,255,255,0.08)" stroke-width="2">
+    <line x1="96" y1="140" x2="416" y2="140"/>
+    <line x1="96" y1="256" x2="416" y2="256"/>
+    <line x1="96" y1="372" x2="416" y2="372"/>
+    <line x1="140" y1="96" x2="140" y2="416"/>
+    <line x1="256" y1="96" x2="256" y2="416"/>
+    <line x1="372" y1="96" x2="372" y2="416"/>
+  </g>
+
+  <!-- هلال ونجمة فيكتور ذهبية -->
+  <path d="M236 106 A126 126 0 1 0 366 286 A98 98 0 1 1 236 106 Z" fill="url(#goldGrad)"/>
+  <polygon points="315,135 327,165 360,165 334,184 344,215 315,196 286,215 296,184 270,165 303,165" fill="#fde68a"/>
+
+  <!-- قوس ومقابض فيكتور (Bezier Vector Handles) -->
+  <path d="M128 338 C180 248, 332 248, 384 338" fill="none" stroke="#38bdf8" stroke-width="10" stroke-linecap="round"/>
+  <line x1="128" y1="338" x2="180" y2="262" stroke="#93c5fd" stroke-width="4" stroke-dasharray="6,6"/>
+  <line x1="384" y1="338" x2="332" y2="262" stroke="#93c5fd" stroke-width="4" stroke-dasharray="6,6"/>
+  <rect x="114" y="324" width="28" height="28" rx="6" fill="#ffffff" stroke="#0284c7" stroke-width="6"/>
+  <rect x="370" y="324" width="28" height="28" rx="6" fill="#ffffff" stroke="#0284c7" stroke-width="6"/>
+  <circle cx="180" cy="262" r="9" fill="#38bdf8" stroke="#ffffff" stroke-width="4"/>
+  <circle cx="332" cy="262" r="9" fill="#38bdf8" stroke="#ffffff" stroke-width="4"/>
+
+  <!-- شريط القياس الحقيقي بالسنتيمتر (cm) -->
+  <rect x="146" y="392" width="220" height="48" rx="24" fill="rgba(15,23,42,0.75)" stroke="#38bdf8" stroke-width="3"/>
+  <text x="256" y="424" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-weight="900" font-size="26" letter-spacing="1">SVG • cm</text>
+</svg>
+

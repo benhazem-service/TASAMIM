@@ -1,0 +1,1017 @@
+/* ==========================================================================
+   مصمم الكلمات وأشكال الفيكتور بالقياسات الحقيقية (cm) - الأنماط الرئيسية
+   متجاوب بالكامل مع الهواتف، الأجهزة اللوحية، وشاشات الحواسيب
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. المتغيرات وإعدادات الصفحة الأساسية (Variables & Base Reset)
+   -------------------------------------------------------------------------- */
+:root {
+  --bg: #f8fafc;
+  --panel: #ffffff;
+  --primary: #0f172a;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --border: #e2e8f0;
+  --text-color: #2563eb;
+  --shape-color: #10b981;
+  --sep-color: #8b5cf6;
+  --sidebar-w: 390px;
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  position: fixed;
+}
+
+body {
+  font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--primary);
+  display: flex;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+/* --------------------------------------------------------------------------
+   2. الشريط العلوي للهواتف (Top Bar Mobile)
+   -------------------------------------------------------------------------- */
+.top-bar {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(54px + var(--sat));
+  padding-top: var(--sat);
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 12px;
+  padding-right: 12px;
+  z-index: 50;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.top-bar-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.top-bar-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  box-shadow: 0 2px 5px rgba(37, 99, 235, 0.25);
+}
+
+.top-bar h2 {
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.top-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.top-bar-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-weight: 700;
+  font-family: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+}
+
+.top-bar-btn.install-btn-nav {
+  background: #10b981;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+}
+
+/* --------------------------------------------------------------------------
+   3. بنر التثبيت على الهاتف (PWA Floating Install Banner)
+   -------------------------------------------------------------------------- */
+.pwa-install-banner {
+  display: none;
+  position: fixed;
+  bottom: calc(14px + var(--sab));
+  left: 14px;
+  right: 14px;
+  max-width: 440px;
+  margin: 0 auto;
+  background: #0f172a;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  padding: 10px 14px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  z-index: 95;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.pwa-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pwa-banner-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 9px;
+  flex-shrink: 0;
+}
+
+.pwa-banner-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.pwa-banner-title {
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.pwa-banner-desc {
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+.pwa-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pwa-btn-install {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-weight: 800;
+  font-size: 0.78rem;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.pwa-btn-dismiss {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+
+/* --------------------------------------------------------------------------
+   4. الشريط الجانبي للإعدادات (Sidebar)
+   -------------------------------------------------------------------------- */
+aside {
+  width: var(--sidebar-w);
+  min-width: 320px;
+  background: var(--panel);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.06);
+  z-index: 20;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.aside-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: calc(14px + var(--sat));
+}
+
+.aside-header h1 {
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: #1e293b;
+  line-height: 1.3;
+}
+
+.aside-body {
+  padding: 14px 18px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  padding-bottom: calc(24px + var(--sab));
+}
+
+/* زر التثبيت داخل الشريط الجانبي */
+.sidebar-install-box {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border: 1px solid #bfdbfe;
+  border-radius: 9px;
+  padding: 10px;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sidebar-install-box span {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1e40af;
+}
+
+.btn-sidebar-install {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* عناصر النماذج والتحكم */
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #475569;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="password"],
+select {
+  padding: 8px 11px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  font-size: 0.88rem;
+  font-family: inherit;
+  outline: none;
+  background: #fff;
+  width: 100%;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px #2563eb22;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   5. بطاقة القياس اليدوي الإجمالي (Manual Dimensions Card)
+   -------------------------------------------------------------------------- */
+.dim-card {
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 9px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dim-card-title {
+  font-size: 0.84rem;
+  font-weight: 900;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dim-inputs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.dim-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.dim-field label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #475569;
+}
+
+.dim-field input {
+  font-weight: 800;
+  text-align: center;
+  color: #0f172a;
+  background: #fff;
+  font-size: 0.95rem;
+}
+
+.dim-reset-btn {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #475569;
+  cursor: pointer;
+  transition: 0.15s;
+  text-align: center;
+}
+
+.dim-reset-btn:hover {
+  background: #eff6ff;
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* --------------------------------------------------------------------------
+   6. قسم الأشكال والزخارف (Shapes Section)
+   -------------------------------------------------------------------------- */
+.shapes-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.shapes-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 5px;
+  max-height: 130px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 2px;
+}
+
+.shape-btn {
+  aspect-ratio: 1;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  transition: all 0.15s;
+  font-size: 0.85rem;
+}
+
+.shape-btn:hover {
+  border-color: var(--accent);
+  background: #eff6ff;
+}
+
+.shape-btn.active {
+  border-color: var(--accent);
+  background: #dbeafe;
+  outline: 2px solid var(--accent);
+}
+
+.shape-btn svg {
+  width: 100%;
+  height: 100%;
+  fill: #1e293b;
+}
+
+.custom-upload-box {
+  border: 1px dashed #94a3b8;
+  border-radius: 6px;
+  padding: 7px;
+  text-align: center;
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #334155;
+  transition: 0.2s;
+}
+
+.custom-upload-box:hover {
+  border-color: var(--accent);
+  background: #eff6ff;
+  color: var(--accent);
+}
+
+/* --------------------------------------------------------------------------
+   7. الخطوط والمفضلة (Font Favorites & Upload)
+   -------------------------------------------------------------------------- */
+.font-fav-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.font-fav-list {
+  max-height: 130px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.font-fav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.font-fav-item:hover {
+  background: #eff6ff;
+}
+
+.font-fav-item input[type="checkbox"] {
+  accent-color: var(--accent);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.fav-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  flex: 1;
+}
+
+.selected-font {
+  background: #dbeafe;
+}
+
+.fav-action-btn {
+  background: none;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-family: inherit;
+  border-radius: 5px;
+  padding: 2px 7px;
+  cursor: pointer;
+  transition: 0.15s;
+  white-space: nowrap;
+}
+
+.fav-action-btn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn-font {
+  background: #f1f5f9;
+  color: #1e293b;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 7px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 0.78rem;
+}
+
+.btn-add-fav {
+  background: none;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-size: 0.73rem;
+  font-weight: 700;
+  font-family: inherit;
+  border-radius: 5px;
+  padding: 3px 9px;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.btn-add-fav:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   8. أزرار التصدير والإرسال عبر الواتساب (Actions & WhatsApp)
+   -------------------------------------------------------------------------- */
+.btn-export {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 4px;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  transition: all 0.15s;
+}
+
+.btn-export:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.customer-card {
+  background: #f0fdf4;
+  border: 1.5px solid #86efac;
+  border-radius: 9px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.customer-card-title {
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: #166534;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.order-code-badge {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-family: monospace;
+  font-size: 0.8rem;
+  font-weight: 800;
+  direction: ltr;
+}
+
+.btn-whatsapp {
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
+  transition: all 0.15s;
+}
+
+.btn-whatsapp:hover {
+  background: #15803d;
+  transform: translateY(-1px);
+}
+
+.customer-status-msg {
+  display: none;
+  font-size: 0.76rem;
+  font-weight: 700;
+  background: #ffffff;
+  border: 1px solid #bbf7d0;
+  border-radius: 6px;
+  padding: 7px 9px;
+  line-height: 1.45;
+}
+
+/* بوابة المدير */
+.admin-toggle-btn {
+  background: #1e293b;
+  color: #f8fafc;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: 0.15s;
+  white-space: nowrap;
+}
+
+.admin-toggle-btn:hover {
+  background: #334155;
+}
+
+.admin-auth-box {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  background: #fefce8;
+  border: 1.5px solid #fde047;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.admin-section-body {
+  display: none;
+  flex-direction: column;
+  gap: 9px;
+  background: #eff6ff;
+  border: 1.5px solid #bfdbfe;
+  border-radius: 9px;
+  padding: 12px;
+}
+
+.admin-section-title {
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: #1e40af;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-decoded-info {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  background: #ffffff;
+  border: 1px solid #93c5fd;
+  border-radius: 7px;
+  padding: 8px;
+  font-size: 0.78rem;
+  color: #1e3a8a;
+}
+
+/* --------------------------------------------------------------------------
+   9. مساحة العمل والرسم (Canvas Area)
+   -------------------------------------------------------------------------- */
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  background: #f1f5f9;
+}
+
+/* الشريط العائم العلوي للمعلومات */
+.top-floating-bar {
+  position: absolute;
+  top: calc(14px + var(--sat));
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  padding: 6px 18px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  z-index: 10;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #475569;
+  white-space: nowrap;
+}
+
+.top-floating-bar span.val {
+  color: var(--accent);
+}
+
+.top-floating-bar .sep-badge {
+  color: #7c3aed;
+  background: #f5f3ff;
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid #ddd6fe;
+}
+
+/* أزرار التحكم في التكبير والرؤية */
+.view-controls {
+  position: absolute;
+  bottom: calc(20px + var(--sab));
+  right: calc(20px + var(--sar));
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  z-index: 10;
+}
+
+.view-btn {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 14px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #334155;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.view-btn:hover {
+  background: #eff6ff;
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.view-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* لوحة الرسم والشبكة (Artboard Container) */
+.artboard-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  touch-action: none;
+}
+
+.artboard-card {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.09);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.2s ease, height 0.2s ease;
+  background-image:
+    linear-gradient(to right, rgba(203, 213, 225, 0.35) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(203, 213, 225, 0.35) 1px, transparent 1px);
+  background-size: 37.8px 37.8px;
+}
+
+svg#previewSvg {
+  overflow: visible;
+  width: 100%;
+  height: 100%;
+}
+
+/* عناصر التفاعل والسحب */
+.interactive-group {
+  cursor: grab;
+}
+
+.interactive-group:active,
+body.is-dragging .interactive-group {
+  cursor: grabbing !important;
+}
+
+#guideLinesGroup,
+#separationGuideGroup {
+  pointer-events: none;
+}
+
+.drag-selection-box {
+  pointer-events: none;
+  stroke-dasharray: 4, 4;
+  transition: opacity 0.2s;
+}
+
+.drag-label-badge {
+  font-size: 11px;
+  font-weight: 800;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* مقابض التحجيم المباشرة في زوايا الشكل */
+.resize-handle {
+  fill: #ffffff;
+  stroke: #10b981;
+  stroke-width: 2.5;
+  cursor: nwse-resize;
+  transition: transform 0.1s, fill 0.15s;
+}
+
+.resize-handle:hover,
+body.is-resizing .resize-handle {
+  fill: #10b981;
+  stroke: #ffffff;
+}
+
+#handleTR,
+#handleBL {
+  cursor: nesw-resize;
+}
+
+/* تلميح السحب والتحريك السفلي */
+.drag-hint {
+  position: absolute;
+  bottom: calc(20px + var(--sab));
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.85);
+  color: #fff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: 20px;
+  pointer-events: none;
+  transition: opacity 0.4s;
+  white-space: nowrap;
+  z-index: 10;
+  max-width: 90vw;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   10. التجاوب الكامل مع شاشات الهواتف والأجهزة اللوحية (Responsive Adaptability)
+   -------------------------------------------------------------------------- */
+@media (max-width: 860px) {
+  body {
+    flex-direction: column;
+  }
+
+  aside {
+    width: 100%;
+    min-width: 0;
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
+    height: 100dvh;
+    transform: translateX(110%);
+    z-index: 100;
+    box-shadow: -4px 0 25px rgba(0, 0, 0, 0.15);
+  }
+
+  aside.open {
+    transform: translateX(0);
+  }
+
+  main {
+    padding: 10px;
+    padding-top: calc(64px + var(--sat));
+    padding-bottom: calc(50px + var(--sab));
+  }
+
+  .top-bar {
+    display: flex;
+  }
+
+  .shapes-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .menu-close {
+    display: flex !important;
+  }
+
+  .top-floating-bar {
+    top: calc(62px + var(--sat));
+    font-size: 0.7rem;
+    padding: 4px 12px;
+    gap: 8px;
+    max-width: 95vw;
+  }
+
+  .view-controls {
+    bottom: calc(14px + var(--sab));
+    right: 12px;
+    padding: 3px 6px;
+  }
+
+  .view-btn {
+    padding: 4px 8px;
+    font-size: 0.72rem;
+  }
+
+  .drag-hint {
+    bottom: calc(52px + var(--sab));
+    font-size: 0.68rem;
+    padding: 4px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .shapes-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .top-floating-bar {
+    font-size: 0.66rem;
+    padding: 3px 10px;
+  }
+
+  .view-controls #btn100 {
+    display: none;
+  }
+}
+
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 99;
+}
+
+.overlay.active {
+  display: block;
+}
+
+.menu-close {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.3rem;
+  color: #64748b;
+  padding: 4px;
+}
