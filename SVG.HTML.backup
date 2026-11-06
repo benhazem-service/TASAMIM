@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مصمم الكلمات وأشكال الفيكتور بالقياسات الحقيقية (cm)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Cairo:wght@700;900&family=Changa:wght@700&family=Kufam:wght@700&family=Rakkas&family=Reem+Kufi:wght@700&family=Tajawal:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --primary: #0f172a;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --border: #e2e8f0;
+      --text-color: #2563eb;
+      --shape-color: #10b981;
+      --sep-color: #8b5cf6;
+      --sidebar-w: 390px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Cairo', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--primary);
+      display: flex;
+      height: 100dvh;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* Top Bar Mobile */
+    .top-bar {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 52px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 50;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+    .top-bar h2 { font-size: .95rem; font-weight: 900; }
+    .top-bar-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 6px 14px;
+      font-weight: 700;
+      font-family: inherit;
+      font-size: .85rem;
+      cursor: pointer;
+    }
+
+    /* Sidebar */
+    aside {
+      width: var(--sidebar-w);
+      min-width: 320px;
+      background: var(--panel);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 2px 0 12px rgba(0,0,0,.06);
+      z-index: 20;
+      transition: transform .3s ease;
+    }
+    .aside-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      background: #fafafa;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .aside-header h1 {
+      font-size: .98rem;
+      font-weight: 900;
+      color: #1e293b;
+      line-height: 1.3;
+    }
+    .aside-body {
+      padding: 14px 18px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+
+    /* Forms & Controls */
+    .control-group { display: flex; flex-direction: column; gap: 4px; }
+    label {
+      font-size: .8rem;
+      font-weight: 700;
+      color: #475569;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    input[type=text], input[type=number], select {
+      padding: 8px 11px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      font-size: .88rem;
+      font-family: inherit;
+      outline: none;
+      background: #fff;
+      width: 100%;
+      user-select: text;
+    }
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px #2563eb22;
+    }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+    /* Manual Dimensions Card */
+    .dim-card {
+      background: #f8fafc;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 9px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .dim-card-title {
+      font-size: .84rem;
+      font-weight: 900;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .dim-inputs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .dim-field {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .dim-field label {
+      font-size: .75rem;
+      font-weight: 700;
+      color: #475569;
+    }
+    .dim-field input {
+      font-weight: 800;
+      text-align: center;
+      color: #0f172a;
+      background: #fff;
+      font-size: .95rem;
+    }
+    .dim-reset-btn {
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: .75rem;
+      font-weight: 700;
+      color: #475569;
+      cursor: pointer;
+      transition: .15s;
+      text-align: center;
+    }
+    .dim-reset-btn:hover { background: #eff6ff; border-color: var(--accent); color: var(--accent); }
+
+    /* Shapes Grid */
+    .shapes-section {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .shapes-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 5px;
+      max-height: 130px;
+      overflow-y: auto;
+      padding: 2px;
+    }
+    .shape-btn {
+      aspect-ratio: 1;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 6px;
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px;
+      transition: all .15s;
+      font-size: .85rem;
+    }
+    .shape-btn:hover { border-color: var(--accent); background: #eff6ff; }
+    .shape-btn.active { border-color: var(--accent); background: #dbeafe; outline: 2px solid var(--accent); }
+    .shape-btn svg { width: 100%; height: 100%; fill: #1e293b; }
+    .custom-upload-box {
+      border: 1px dashed #94a3b8;
+      border-radius: 6px;
+      padding: 7px;
+      text-align: center;
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: .78rem;
+      font-weight: 700;
+      color: #334155;
+      transition: .2s;
+    }
+    .custom-upload-box:hover { border-color: var(--accent); background: #eff6ff; color: var(--accent); }
+
+    /* Font Favorites */
+    .font-fav-section {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .font-fav-list {
+      max-height: 130px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .font-fav-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 8px;
+      border-radius: 6px;
+      transition: background .15s;
+    }
+    .font-fav-item:hover { background: #eff6ff; }
+    .font-fav-item input[type=checkbox] {
+      accent-color: var(--accent);
+      width: 15px; height: 15px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .fav-label {
+      font-size: .85rem;
+      font-weight: 600;
+      color: #334155;
+      cursor: pointer;
+      flex: 1;
+    }
+    .selected-font { background: #dbeafe; }
+    .fav-action-btn {
+      background: none;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-size: .72rem;
+      font-weight: 700;
+      font-family: inherit;
+      border-radius: 5px;
+      padding: 2px 7px;
+      cursor: pointer;
+      transition: .15s;
+      white-space: nowrap;
+    }
+    .fav-action-btn:hover { background: var(--accent); color: #fff; }
+    .btn-font {
+      background: #f1f5f9;
+      color: #1e293b;
+      cursor: pointer;
+      font-weight: 700;
+      padding: 7px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+      font-family: inherit;
+      font-size: .78rem;
+    }
+    .btn-add-fav {
+      background: none;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-size: .73rem;
+      font-weight: 700;
+      font-family: inherit;
+      border-radius: 5px;
+      padding: 3px 9px;
+      cursor: pointer;
+      transition: .15s;
+    }
+    .btn-add-fav:hover { background: var(--accent); color: #fff; }
+
+    /* Export Button */
+    .btn-export {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      font-weight: 800;
+      cursor: pointer;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: .92rem;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 4px;
+      box-shadow: 0 4px 12px rgba(37,99,235,.25);
+      transition: all .15s;
+    }
+    .btn-export:hover { background: var(--accent-hover); transform: translateY(-1px); }
+
+    /* Canvas Area */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      min-width: 0;
+      background: #f1f5f9;
+    }
+
+    /* Top Floating Tools & Info */
+    .top-floating-bar {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,.94);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      padding: 6px 18px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.08);
+      z-index: 10;
+      font-size: .78rem;
+      font-weight: 800;
+      color: #475569;
+      white-space: nowrap;
+    }
+    .top-floating-bar span.val { color: var(--accent); }
+    .top-floating-bar .sep-badge {
+      color: #7c3aed;
+      background: #f5f3ff;
+      padding: 2px 8px;
+      border-radius: 12px;
+      border: 1px solid #ddd6fe;
+    }
+
+    /* Zoom / Viewport Controls */
+    .view-controls {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,.94);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 8px;
+      box-shadow: 0 4px 14px rgba(0,0,0,.08);
+      z-index: 10;
+    }
+    .view-btn {
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 4px 10px;
+      font-size: .75rem;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .15s;
+    }
+    .view-btn:hover { background: #eff6ff; border-color: var(--accent); color: var(--accent); }
+    .view-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    /* Canvas Artboard Box */
+    .artboard-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .artboard-card {
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      box-shadow: 0 12px 36px rgba(0,0,0,.09);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: width .2s ease, height .2s ease;
+      background-image: 
+        linear-gradient(to right, rgba(203,213,225,.35) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(203,213,225,.35) 1px, transparent 1px);
+      background-size: 37.8px 37.8px;
+    }
+
+    svg#previewSvg {
+      overflow: visible;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Draggable items */
+    .interactive-group {
+      cursor: grab;
+    }
+    .interactive-group:active, body.is-dragging .interactive-group {
+      cursor: grabbing !important;
+    }
+    #guideLinesGroup, #separationGuideGroup {
+      pointer-events: none;
+    }
+    .drag-selection-box {
+      pointer-events: none;
+      stroke-dasharray: 4,4;
+      transition: opacity .2s;
+    }
+    .drag-label-badge {
+      font-size: 11px;
+      font-weight: 800;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* Interactive Shape Resize Handles */
+    .resize-handle {
+      fill: #ffffff;
+      stroke: #10b981;
+      stroke-width: 2.5;
+      cursor: nwse-resize;
+      transition: transform .1s, fill .15s;
+    }
+    .resize-handle:hover, body.is-resizing .resize-handle {
+      fill: #10b981;
+      stroke: #ffffff;
+    }
+    #handleTR, #handleBL {
+      cursor: nesw-resize;
+    }
+
+    /* Bottom Drag Hint */
+    .drag-hint {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15,23,42,.82);
+      color: #fff;
+      font-size: .75rem;
+      font-weight: 700;
+      padding: 6px 18px;
+      border-radius: 20px;
+      pointer-events: none;
+      transition: opacity .4s;
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 820px) {
+      body { flex-direction: column; }
+      aside {
+        width: 100%;
+        min-width: 0;
+        position: fixed;
+        top: 0; right: 0;
+        height: 100dvh;
+        transform: translateX(110%);
+        z-index: 100;
+      }
+      aside.open { transform: translateX(0); }
+      main { padding: 8px; padding-top: 60px; }
+      .top-bar { display: flex; }
+      .shapes-grid { grid-template-columns: repeat(5, 1fr); }
+      .menu-close { display: flex !important; }
+      .top-floating-bar { font-size: .7rem; padding: 4px 12px; }
+      .view-controls { bottom: 10px; right: 10px; }
+      .drag-hint { bottom: 10px; font-size: .7rem; padding: 4px 10px; }
+    }
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 99; }
+    .overlay.active { display: block; }
+    .menu-close { display: none; background: none; border: none; cursor: pointer; font-size: 1.3rem; color: #64748b; padding: 4px; }
+  </style>
+</head>
+<body>
+  <!-- Top Bar Mobile -->
+  <div class="top-bar">
+    <h2>مصمم الفيكتور (cm)</h2>
+    <button class="top-bar-btn" id="menuToggle">الإعدادات ☰</button>
+  </div>
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <div class="aside-header">
+      <h1>إعدادات الكلمات وأشكال الفيكتور (cm)</h1>
+      <button class="menu-close" id="menuClose">✕</button>
+    </div>
+    <div class="aside-body">
+      <!-- Word Input -->
+      <div class="control-group">
+        <label>النص أو الكلمة:</label>
+        <input type="text" id="textInput" value="مرحبا بك">
+      </div>
+
+      <!-- Font Selector -->
+      <div class="control-group">
+        <label>الخط المستخدم:</label>
+        <select id="fontSelect">
+          <optgroup label="خطوط عربية جاهزة">
+            <option value="'Cairo', sans-serif">القاهرة (Cairo)</option>
+            <option value="'Amiri', serif">الأميري - نسخ</option>
+            <option value="'Reem Kufi', sans-serif">ريم كوفي</option>
+            <option value="'Kufam', sans-serif">كوفام عصري</option>
+            <option value="'Rakkas', display">رقاص عريض</option>
+            <option value="'Changa', sans-serif">تشانغا كتلية</option>
+            <option value="'Tajawal', sans-serif">تجوال</option>
+          </optgroup>
+          <optgroup id="localFontsGroup" label="خطوط الحاسوب"></optgroup>
+        </select>
+        <button class="btn-font" id="loadFontsBtn" style="margin-top:4px;">قراءة جميع خطوط الحاسوب</button>
+      </div>
+
+      <!-- Favorite Fonts -->
+      <div class="font-fav-section">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:.8rem;font-weight:700;color:#334155;">⭐ الخطوط المفضلة</span>
+          <button class="btn-add-fav" id="addFavBtn">+ أضف للمفضلة</button>
+        </div>
+        <div class="font-fav-list" id="favList">
+          <div style="font-size:.75rem;color:#94a3b8;text-align:center;padding:8px;">اختر خطاً ثم اضغط + أضف للمفضلة</div>
+        </div>
+      </div>
+
+      <!-- Shapes Section -->
+      <div class="shapes-section">
+        <label>الأشكال والزخارف (Vector):</label>
+        <label class="custom-upload-box" for="svgFileInput">
+          <span>📁 رفع شكل SVG من حاسوبك</span>
+          <input type="file" id="svgFileInput" accept=".svg" style="display:none;">
+        </label>
+        <div class="shapes-grid" id="shapesGrid">
+          <button class="shape-btn" data-shape="none" title="بدون شكل">✕</button>
+          <button class="shape-btn active" data-shape="crescent" title="هلال ونجمة"><svg viewBox="0 0 100 100"><path d="M50 10 A40 40 0 1 0 88 68 A32 32 0 1 1 50 10 Z"/><polygon points="68,22 72,32 82,32 74,38 77,48 68,42 60,48 63,38 55,32 65,32"/></svg></button>
+          <button class="shape-btn" data-shape="kaaba" title="الكعبة المشرفة"><svg viewBox="0 0 100 100"><polygon points="50,15 88,32 50,48 12,32"/><polygon points="12,35 48,51 48,92 12,74"/><polygon points="52,51 88,35 88,74 52,92"/><polygon points="12,41 48,57 48,62 12,46" fill="#cbd5e1"/><polygon points="52,57 88,41 88,46 52,62" fill="#cbd5e1"/><rect x="62" y="65" width="8" height="15" fill="#cbd5e1"/></svg></button>
+          <button class="shape-btn" data-shape="star8" title="نجمة إسلامية"><svg viewBox="0 0 100 100"><polygon points="50,5 63,22 85,15 78,37 95,50 78,63 85,85 63,78 50,95 37,78 15,85 22,63 5,50 22,37 15,15 37,22"/></svg></button>
+          <button class="shape-btn" data-shape="heart" title="قلب"><svg viewBox="0 0 100 100"><path d="M50,88 C20,65 5,45 5,28 C5,13 17,5 30,5 C39,5 46,10 50,18 C54,10 61,5 70,5 C83,5 95,13 95,28 C95,45 80,65 50,88 Z"/></svg></button>
+          <button class="shape-btn" data-shape="star" title="نجمة خماسية"><svg viewBox="0 0 100 100"><polygon points="50,5 64,36 98,36 70,57 81,91 50,70 19,91 30,57 2,36 36,36"/></svg></button>
+          <button class="shape-btn" data-shape="crown" title="تاج"><svg viewBox="0 0 100 100"><polygon points="10,75 90,75 80,35 60,55 50,25 40,55 20,35"/><circle cx="50" cy="22" r="5"/><circle cx="20" cy="32" r="4"/><circle cx="80" cy="32" r="4"/></svg></button>
+          <button class="shape-btn" data-shape="diamond" title="ماسة"><svg viewBox="0 0 100 100"><polygon points="50,5 95,40 50,95 5,40"/></svg></button>
+          <button class="shape-btn" data-shape="flower" title="زهرة"><svg viewBox="0 0 100 100"><circle cx="50" cy="20" r="12"/><circle cx="80" cy="50" r="12"/><circle cx="50" cy="80" r="12"/><circle cx="20" cy="50" r="12"/><circle cx="50" cy="50" r="15"/></svg></button>
+        </div>
+        <div class="control-group" style="margin-top:6px;">
+          <label>موضع الشكل المبدئي:</label>
+          <select id="shapePosition">
+            <option value="right">يمين النص</option>
+            <option value="left">يسار النص</option>
+            <option value="top">أعلى النص</option>
+            <option value="bottom">أسفل النص</option>
+            <option value="only">الشكل فقط</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Manual Dimensions Card (القياس اليدوي = الكلمة + الشكل) -->
+      <div class="dim-card">
+        <span class="dim-card-title">📏 القياس اليدوي الإجمالي (الكلمة + الشكل)</span>
+        <div class="dim-inputs-grid">
+          <div class="dim-field">
+            <label>↔ العرض الإجمالي (cm):</label>
+            <input type="number" id="manualWidthInput" value="25.0" min="1" step="0.5">
+          </div>
+          <div class="dim-field">
+            <label>↕ الطول الإجمالي (cm):</label>
+            <input type="number" id="manualHeightInput" value="10.0" min="1" step="0.5">
+          </div>
+        </div>
+        <button class="dim-reset-btn" id="btnResetLayout">↺ إعادة ضبط الترتيب والتوسيط</button>
+      </div>
+
+      <!-- Export Button -->
+      <button class="btn-export" id="exportBtn">⬇ تصدير SVG بالقياسات الحقيقية (cm)</button>
+    </div>
+  </aside>
+
+  <!-- Main Canvas Workspace -->
+  <main>
+    <!-- Top Floating Info Bar -->
+    <div class="top-floating-bar" id="topInfoBar">
+      <span>القياس الإجمالي: <span class="val" id="infoW">25.00</span> × <span class="val" id="infoH">10.00</span> cm</span>
+      <span>•</span>
+      <span class="sep-badge" id="infoSep">التباعد: -- cm</span>
+    </div>
+
+    <!-- Artboard Container -->
+    <div class="artboard-container" id="artboardContainer">
+      <div class="artboard-card" id="artboardCard">
+        <svg id="previewSvg" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#0284c7"/>
+            </marker>
+          </defs>
+
+          <!-- المجموعة المدمجة (الكلمة + الشكل) تحت السيطرة المباشرة للقياس اليدوي -->
+          <g id="masterDesignGroup">
+            <!-- 1. الكلمة -->
+            <g id="textGroup" class="interactive-group">
+              <rect id="textHitArea" fill="transparent" pointer-events="all"/>
+              <rect id="textSelectionBox" class="drag-selection-box" fill="none" stroke="#2563eb" stroke-width="1.2" rx="4"/>
+              <text id="textLabelBadge" class="drag-label-badge" fill="#2563eb">📝 الكلمة</text>
+              <text id="svgText" x="0" y="0" text-anchor="middle" dominant-baseline="central" fill="#1e293b">مرحبا بك</text>
+            </g>
+
+            <!-- 2. الشكل مع مقابض التكبير والتصغير المباشرة -->
+            <g id="shapeGroup" class="interactive-group">
+              <rect id="shapeHitArea" fill="transparent" pointer-events="all"/>
+              <rect id="shapeSelectionBox" class="drag-selection-box" fill="none" stroke="#10b981" stroke-width="1.2" rx="4"/>
+              <text id="shapeLabelBadge" class="drag-label-badge" fill="#10b981">⭐ الشكل (اسحب المقابض للتكبير)</text>
+              <g id="shapeContainer" fill="#1e293b"></g>
+              <!-- مقابض الزوايا للتحجيم بالماوس -->
+              <circle class="resize-handle" id="handleTL" r="6"/>
+              <circle class="resize-handle" id="handleTR" r="6"/>
+              <circle class="resize-handle" id="handleBR" r="6"/>
+              <circle class="resize-handle" id="handleBL" r="6"/>
+            </g>
+          </g>
+
+          <!-- خطوط القياس اليدوي المحيطة بالتصميم الكلي -->
+          <g id="guideLinesGroup">
+            <rect id="outerDesignRect" fill="none" stroke="#64748b" stroke-width="1.5" stroke-dasharray="5,5" rx="6"/>
+            <line id="topDimLine" stroke="#0284c7" stroke-width="1.8" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+            <rect id="widthBadgeBg" fill="#0284c7" rx="4"/>
+            <text id="widthLabel" fill="#ffffff" font-size="12" font-weight="900" text-anchor="middle" dominant-baseline="central">-- cm</text>
+            <line id="sideDimLine" stroke="#0284c7" stroke-width="1.8" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+            <rect id="heightBadgeBg" fill="#0284c7" rx="4"/>
+            <text id="heightLabel" fill="#ffffff" font-size="12" font-weight="900" text-anchor="middle" dominant-baseline="central">-- cm</text>
+          </g>
+
+          <!-- خط قياس مسافة التباعد -->
+          <g id="separationGuideGroup">
+            <line id="sepLine" stroke="#8b5cf6" stroke-width="1.6" stroke-dasharray="3,3"/>
+            <rect id="sepBadgeRect" fill="#8b5cf6" rx="4"/>
+            <text id="sepBadgeText" fill="#ffffff" font-size="11" font-weight="800" text-anchor="middle" dominant-baseline="central">تباعد: -- cm</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Zoom & Real Scale Controls -->
+    <div class="view-controls">
+      <button class="view-btn active" id="btnFit">احتواء ⛶</button>
+      <button class="view-btn" id="btn100">حجم حقيقي 100%</button>
+      <button class="view-btn" id="btnZoomOut">-</button>
+      <button class="view-btn" id="btnZoomIn">+</button>
+    </div>
+
+    <div class="drag-hint" id="dragHint">✥ اسحب الكلمة أو الشكل للتحريك • اسحب زوايا الشكل بالماوس لتكبيره وتصغيره</div>
+  </main>
+
+  <script>
+    // =========================================================
+    // 1. الثوابت والأشكال الجاهزة
+    // =========================================================
+    const PX_PER_CM = 37.79527559; // 96 DPI / 2.54 = ~37.8 px per cm
+
+    const builtInShapes = {
+      none: '',
+      crescent: '<path d="M50 10 A40 40 0 1 0 88 68 A32 32 0 1 1 50 10 Z"/><polygon points="68,22 72,32 82,32 74,38 77,48 68,42 60,48 63,38 55,32 65,32"/>',
+      kaaba: '<polygon points="50,15 88,32 50,48 12,32"/><polygon points="12,35 48,51 48,92 12,74"/><polygon points="52,51 88,35 88,74 52,92"/><polygon points="12,41 48,57 48,62 12,46" fill="#cbd5e1"/><polygon points="52,57 88,41 88,46 52,62" fill="#cbd5e1"/><rect x="62" y="65" width="8" height="15" fill="#cbd5e1"/>',
+      star8: '<polygon points="50,5 63,22 85,15 78,37 95,50 78,63 85,85 63,78 50,95 37,78 15,85 22,63 5,50 22,37 15,15 37,22"/>',
+      heart: '<path d="M50,88 C20,65 5,45 5,28 C5,13 17,5 30,5 C39,5 46,10 50,18 C54,10 61,5 70,5 C83,5 95,13 95,28 C95,45 80,65 50,88 Z"/>',
+      star: '<polygon points="50,5 64,36 98,36 70,57 81,91 50,70 19,91 30,57 2,36 36,36"/>',
+      crown: '<polygon points="10,75 90,75 80,35 60,55 50,25 40,55 20,35"/><circle cx="50" cy="22" r="5"/><circle cx="20" cy="32" r="4"/><circle cx="80" cy="32" r="4"/>',
+      diamond: '<polygon points="50,5 95,40 50,95 5,40"/>',
+      flower: '<circle cx="50" cy="20" r="12"/><circle cx="80" cy="50" r="12"/><circle cx="50" cy="80" r="12"/><circle cx="20" cy="50" r="12"/><circle cx="50" cy="50" r="15"/>'
+    };
+
+    let customShapes = {};
+    let activeShapeKey = 'crescent';
+    let favoriteFonts = JSON.parse(localStorage.getItem('favFonts') || '[]');
+    let currentZoomMode = 'fit';
+    let customZoomLevel = 1.0;
+
+    // =========================================================
+    // 2. حالة القياسات اليدوية (القياس اليدوي = الكلمة + الشكل)
+    // =========================================================
+    let manualWidth_cm = 25.0;  // العرض الإجمالي المحدد يدوياً
+    let manualHeight_cm = 10.0; // الطول الإجمالي المحدد يدوياً
+
+    // إحداثيات ومقاييس نسبية داخل التصميم
+    let textRelX = -120;
+    let textRelY = 0;
+    let shapeRelX = 140;
+    let shapeRelY = 0;
+    let shapeScaleRatio = 1.0; // نسبة حجم الشكل مقارنة بالكلمة
+
+    // عناصر الواجهة
+    const textInput = document.getElementById('textInput');
+    const fontSelect = document.getElementById('fontSelect');
+    const loadFontsBtn = document.getElementById('loadFontsBtn');
+    const localFontsGroup = document.getElementById('localFontsGroup');
+    const shapePosition = document.getElementById('shapePosition');
+    const manualWidthInput = document.getElementById('manualWidthInput');
+    const manualHeightInput = document.getElementById('manualHeightInput');
+    const btnResetLayout = document.getElementById('btnResetLayout');
+
+    const exportBtn = document.getElementById('exportBtn');
+    const svgFileInput = document.getElementById('svgFileInput');
+    const shapesGrid = document.getElementById('shapesGrid');
+    const addFavBtn = document.getElementById('addFavBtn');
+    const favList = document.getElementById('favList');
+
+    const artboardContainer = document.getElementById('artboardContainer');
+    const artboardCard = document.getElementById('artboardCard');
+    const previewSvg = document.getElementById('previewSvg');
+
+    const masterDesignGroup = document.getElementById('masterDesignGroup');
+    const textGroup = document.getElementById('textGroup');
+    const textHitArea = document.getElementById('textHitArea');
+    const textSelectionBox = document.getElementById('textSelectionBox');
+    const textLabelBadge = document.getElementById('textLabelBadge');
+    const svgText = document.getElementById('svgText');
+
+    const shapeGroup = document.getElementById('shapeGroup');
+    const shapeHitArea = document.getElementById('shapeHitArea');
+    const shapeSelectionBox = document.getElementById('shapeSelectionBox');
+    const shapeLabelBadge = document.getElementById('shapeLabelBadge');
+    const shapeContainer = document.getElementById('shapeContainer');
+
+    const handleTL = document.getElementById('handleTL');
+    const handleTR = document.getElementById('handleTR');
+    const handleBR = document.getElementById('handleBR');
+    const handleBL = document.getElementById('handleBL');
+
+    const guideLinesGroup = document.getElementById('guideLinesGroup');
+    const outerDesignRect = document.getElementById('outerDesignRect');
+    const topDimLine = document.getElementById('topDimLine');
+    const widthBadgeBg = document.getElementById('widthBadgeBg');
+    const widthLabel = document.getElementById('widthLabel');
+    const sideDimLine = document.getElementById('sideDimLine');
+    const heightBadgeBg = document.getElementById('heightBadgeBg');
+    const heightLabel = document.getElementById('heightLabel');
+
+    const separationGuideGroup = document.getElementById('separationGuideGroup');
+    const sepLine = document.getElementById('sepLine');
+    const sepBadgeRect = document.getElementById('sepBadgeRect');
+    const sepBadgeText = document.getElementById('sepBadgeText');
+
+    const infoW = document.getElementById('infoW');
+    const infoH = document.getElementById('infoH');
+    const infoSep = document.getElementById('infoSep');
+    const dragHint = document.getElementById('dragHint');
+
+    const btnFit = document.getElementById('btnFit');
+    const btn100 = document.getElementById('btn100');
+    const btnZoomOut = document.getElementById('btnZoomOut');
+    const btnZoomIn = document.getElementById('btnZoomIn');
+
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const menuToggle = document.getElementById('menuToggle');
+    const menuClose = document.getElementById('menuClose');
+
+    // =========================================================
+    // 3. الخطوط والمفضلة والشكل
+    // =========================================================
+    menuToggle && menuToggle.addEventListener('click', () => { sidebar.classList.add('open'); overlay.classList.add('active'); });
+    menuClose.addEventListener('click', () => { sidebar.classList.remove('open'); overlay.classList.remove('active'); });
+    overlay.addEventListener('click', () => { sidebar.classList.remove('open'); overlay.classList.remove('active'); });
+
+    // رفع SVG
+    svgFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const doc = new DOMParser().parseFromString(ev.target.result, 'image/svg+xml');
+        const svgEl = doc.querySelector('svg');
+        if (svgEl) {
+          const content = svgEl.innerHTML;
+          const id = 'custom_' + Date.now();
+          customShapes[id] = content;
+          const btn = document.createElement('button');
+          btn.className = 'shape-btn';
+          btn.dataset.shape = id;
+          btn.title = file.name;
+          btn.innerHTML = '<svg viewBox="0 0 100 100">' + content + '</svg>';
+          shapesGrid.appendChild(btn);
+          selectShape(id, btn);
+        } else alert('تعذر قراءة ملف SVG.');
+      };
+      reader.readAsText(file);
+    });
+
+    function selectShape(key, btn) {
+      activeShapeKey = key;
+      document.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderDesign();
+    }
+    shapesGrid.addEventListener('click', (e) => {
+      const btn = e.target.closest('.shape-btn');
+      if (btn) selectShape(btn.dataset.shape, btn);
+    });
+
+    // قراءة خطوط الحاسوب
+    loadFontsBtn.addEventListener('click', async () => {
+      if ('queryLocalFonts' in window) {
+        try {
+          const af = await window.queryLocalFonts();
+          const uf = Array.from(new Set(af.map(f => f.family))).sort();
+          localFontsGroup.innerHTML = '';
+          uf.forEach(fam => {
+            const o = document.createElement('option');
+            o.value = '"' + fam + '"';
+            o.textContent = fam;
+            localFontsGroup.appendChild(o);
+          });
+          loadFontsBtn.textContent = 'تم تحميل ' + uf.length + ' خط ✓';
+          loadFontsBtn.disabled = true;
+        } catch (e) {
+          alert('تم رفض إذن الوصول لخطوط الحاسوب.');
+        }
+      } else alert('ميزة قراءة خطوط الحاسوب مدعومة على متصفحي Chrome و Edge فقط.');
+    });
+
+    function saveFavFonts() { localStorage.setItem('favFonts', JSON.stringify(favoriteFonts)); }
+    function renderFavList() {
+      if (!favoriteFonts.length) {
+        favList.innerHTML = '<div style="font-size:.75rem;color:#94a3b8;text-align:center;padding:8px;">اختر خطاً ثم اضغط + أضف للمفضلة</div>';
+        return;
+      }
+      favList.innerHTML = '';
+      favoriteFonts.forEach((fav, idx) => {
+        const item = document.createElement('div');
+        item.className = 'font-fav-item' + (fontSelect.value === fav.value ? ' selected-font' : '');
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = true;
+        cb.id = 'fav_' + idx;
+        cb.addEventListener('change', () => {
+          if (!cb.checked) {
+            favoriteFonts = favoriteFonts.filter(f => f.value !== fav.value);
+            saveFavFonts();
+            renderFavList();
+          }
+        });
+        const lbl = document.createElement('label');
+        lbl.htmlFor = 'fav_' + idx;
+        lbl.className = 'fav-label';
+        lbl.textContent = fav.label;
+        lbl.style.fontFamily = fav.value;
+        const useBtn = document.createElement('button');
+        useBtn.className = 'fav-action-btn';
+        useBtn.textContent = 'استخدم';
+        useBtn.addEventListener('click', () => {
+          let found = false;
+          Array.from(fontSelect.options).forEach(o => {
+            if (o.value === fav.value) { o.selected = true; found = true; }
+          });
+          if (!found) {
+            const o = document.createElement('option');
+            o.value = fav.value;
+            o.textContent = fav.label;
+            localFontsGroup.appendChild(o);
+            o.selected = true;
+          }
+          renderDesign();
+          renderFavList();
+        });
+        item.appendChild(cb);
+        item.appendChild(lbl);
+        item.appendChild(useBtn);
+        favList.appendChild(item);
+      });
+    }
+    addFavBtn.addEventListener('click', () => {
+      const sel = fontSelect.options[fontSelect.selectedIndex];
+      if (!sel || !sel.value) return;
+      if (!favoriteFonts.some(f => f.value === sel.value)) {
+        favoriteFonts.push({ value: sel.value, label: sel.text });
+        saveFavFonts();
+        renderFavList();
+        addFavBtn.textContent = '✓ تمت الإضافة';
+      } else addFavBtn.textContent = '⚠ موجود مسبقاً';
+      setTimeout(() => { addFavBtn.textContent = '+ أضف للمفضلة'; }, 1500);
+    });
+    renderFavList();
+
+    // =========================================================
+    // 4. المحرك الرياضي: القياس اليدوي = الكلمة + الشكل
+    // =========================================================
+    function renderDesign() {
+      const txt = textInput.value || '';
+      const pos = shapePosition.value;
+      const showText = (pos !== 'only' && txt.length > 0);
+      const showShape = (activeShapeKey !== 'none');
+
+      // 1. النص
+      if (showText) {
+        textGroup.style.display = '';
+        svgText.textContent = txt;
+        svgText.setAttribute('font-family', fontSelect.value);
+        svgText.setAttribute('font-size', '100'); // حجم نسبي أساسي
+        svgText.setAttribute('fill', '#1e293b');
+      } else {
+        textGroup.style.display = 'none';
+      }
+
+      // 2. الشكل
+      shapeContainer.innerHTML = '';
+      if (showShape) {
+        shapeGroup.style.display = '';
+        const raw = builtInShapes[activeShapeKey] || customShapes[activeShapeKey];
+        if (raw) {
+          const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+          g.innerHTML = raw;
+          shapeContainer.appendChild(g);
+
+          let rawBBox = { x: 0, y: 0, width: 100, height: 100 };
+          try {
+            const b = g.getBBox();
+            if (b.width > 0 && b.height > 0) rawBBox = b;
+          } catch (e) {}
+
+          const maxDim = Math.max(rawBBox.width, rawBBox.height, 1);
+          // الحجم النسبي للشكل بناءً على shapeScaleRatio
+          const targetPx = 100 * shapeScaleRatio;
+          const scale = targetPx / maxDim;
+          const cx = rawBBox.x + rawBBox.width / 2;
+          const cy = rawBBox.y + rawBBox.height / 2;
+          g.setAttribute('transform', 'scale(' + scale + ') translate(' + (-cx) + ',' + (-cy) + ')');
+          shapeContainer.setAttribute('fill', '#1e293b');
+        }
+      } else {
+        shapeGroup.style.display = 'none';
+      }
+
+      // تطبيق المواضع وتطبيع المجموعة ككل لتطابق القياس اليدوي
+      applyLayoutAndManualDimensions();
+    }
+
+    function applyLayoutAndManualDimensions() {
+      // 1. تطبيق الإزاحات النسبية
+      textGroup.setAttribute('transform', 'translate(' + textRelX.toFixed(2) + ',' + textRelY.toFixed(2) + ')');
+      shapeGroup.setAttribute('transform', 'translate(' + shapeRelX.toFixed(2) + ',' + shapeRelY.toFixed(2) + ')');
+
+      // 2. حساب الحدود الكلية لـ (الكلمة + الشكل) في الفضاء النسبي
+      const showText = (textGroup.style.display !== 'none');
+      const showShape = (shapeGroup.style.display !== 'none');
+
+      let tb = null, sb = null;
+      if (showText) {
+        try {
+          const b = svgText.getBBox();
+          tb = { x: b.x + textRelX, y: b.y + textRelY, width: b.width, height: b.height };
+        } catch (e) {}
+      }
+      if (showShape) {
+        try {
+          const b = shapeContainer.getBBox();
+          sb = { x: b.x + shapeRelX, y: b.y + shapeRelY, width: b.width, height: b.height };
+        } catch (e) {}
+      }
+
+      let minX, maxX, minY, maxY;
+      if (tb && sb) {
+        minX = Math.min(tb.x, sb.x);
+        maxX = Math.max(tb.x + tb.width, sb.x + sb.width);
+        minY = Math.min(tb.y, sb.y);
+        maxY = Math.max(tb.y + tb.height, sb.y + sb.height);
+      } else if (tb) {
+        minX = tb.x; maxX = tb.x + tb.width;
+        minY = tb.y; maxY = tb.y + tb.height;
+      } else if (sb) {
+        minX = sb.x; maxX = sb.x + sb.width;
+        minY = sb.y; maxY = sb.y + sb.height;
+      } else {
+        minX = -100; maxX = 100; minY = -50; maxY = 50;
+      }
+
+      const totalLocalW = Math.max(maxX - minX, 1);
+      const totalLocalH = Math.max(maxY - minY, 1);
+      const centerLocalX = (minX + maxX) / 2;
+      const centerLocalY = (minY + maxY) / 2;
+
+      // 3. التحجيم المباشر لمطابقة القياس اليدوي (الكلمة + الشكل = القياس اليدوي)
+      const targetWPx = manualWidth_cm * PX_PER_CM;
+      const targetHPx = manualHeight_cm * PX_PER_CM;
+
+      const scaleX = targetWPx / totalLocalW;
+      const scaleY = targetHPx / totalLocalH;
+
+      // تطبيق التحويل على المجموعة الرئيسية masterDesignGroup
+      masterDesignGroup.setAttribute('transform', 
+        'scale(' + scaleX.toFixed(4) + ',' + scaleY.toFixed(4) + ') ' +
+        'translate(' + (-centerLocalX).toFixed(2) + ',' + (-centerLocalY).toFixed(2) + ')'
+      );
+
+      // تحديث مناطق النقر ومقابض الشكل
+      updateHitBoxesAndHandles();
+
+      // تحديث خطوط القياس اليدوي ومساحة العرض
+      updateGuidesAndView(targetWPx, targetHPx);
+    }
+
+    function updateHitBoxesAndHandles() {
+      // إطار النص
+      if (textGroup.style.display !== 'none') {
+        try {
+          const b = svgText.getBBox();
+          const p = 8;
+          textHitArea.setAttribute('x', b.x - p);
+          textHitArea.setAttribute('y', b.y - p);
+          textHitArea.setAttribute('width', b.width + p * 2);
+          textHitArea.setAttribute('height', b.height + p * 2);
+
+          textSelectionBox.setAttribute('x', b.x - p);
+          textSelectionBox.setAttribute('y', b.y - p);
+          textSelectionBox.setAttribute('width', b.width + p * 2);
+          textSelectionBox.setAttribute('height', b.height + p * 2);
+
+          textLabelBadge.setAttribute('x', b.x - p + 4);
+          textLabelBadge.setAttribute('y', b.y - p - 4);
+        } catch (e) {}
+      }
+
+      // إطار الشكل ومقابض التكبير
+      if (shapeGroup.style.display !== 'none') {
+        try {
+          const b = shapeContainer.getBBox();
+          const p = 8;
+          const bx = b.x - p, by = b.y - p, bw = b.width + p * 2, bh = b.height + p * 2;
+
+          shapeHitArea.setAttribute('x', bx);
+          shapeHitArea.setAttribute('y', by);
+          shapeHitArea.setAttribute('width', bw);
+          shapeHitArea.setAttribute('height', bh);
+
+          shapeSelectionBox.setAttribute('x', bx);
+          shapeSelectionBox.setAttribute('y', by);
+          shapeSelectionBox.setAttribute('width', bw);
+          shapeSelectionBox.setAttribute('height', bh);
+
+          shapeLabelBadge.setAttribute('x', bx + 4);
+          shapeLabelBadge.setAttribute('y', by - 5);
+
+          handleTL.setAttribute('cx', bx);
+          handleTL.setAttribute('cy', by);
+
+          handleTR.setAttribute('cx', bx + bw);
+          handleTR.setAttribute('cy', by);
+
+          handleBR.setAttribute('cx', bx + bw);
+          handleBR.setAttribute('cy', by + bh);
+
+          handleBL.setAttribute('cx', bx);
+          handleBL.setAttribute('cy', by + bh);
+        } catch (e) {}
+      }
+    }
+
+    // =========================================================
+    // 5. تحديث خطوط القياس اليدوية والعرض (Manual Dimensions Display)
+    // =========================================================
+    function updateGuidesAndView(targetWPx, targetHPx) {
+      // مستطيل يطابق تماماً القياس اليدوي المحدد
+      const minX = -targetWPx / 2;
+      const minY = -targetHPx / 2;
+
+      outerDesignRect.setAttribute('x', minX);
+      outerDesignRect.setAttribute('y', minY);
+      outerDesignRect.setAttribute('width', targetWPx);
+      outerDesignRect.setAttribute('height', targetHPx);
+
+      // خط قياس العرض العلوي (يقرأ دائماً القياس اليدوي)
+      const pad = 24;
+      const topY = minY - pad;
+      topDimLine.setAttribute('x1', minX);
+      topDimLine.setAttribute('y1', topY);
+      topDimLine.setAttribute('x2', minX + targetWPx);
+      topDimLine.setAttribute('y2', topY);
+
+      widthLabel.textContent = manualWidth_cm.toFixed(2) + ' cm';
+      widthLabel.setAttribute('x', 0);
+      widthLabel.setAttribute('y', topY - 12);
+
+      const wbw = 84, wbh = 22;
+      widthBadgeBg.setAttribute('x', -wbw / 2);
+      widthBadgeBg.setAttribute('y', topY - 12 - wbh / 2);
+      widthBadgeBg.setAttribute('width', wbw);
+      widthBadgeBg.setAttribute('height', wbh);
+
+      // خط قياس الطول الجانبي (يقرأ دائماً القياس اليدوي)
+      const sideX = minX - pad;
+      sideDimLine.setAttribute('x1', sideX);
+      sideDimLine.setAttribute('y1', minY);
+      sideDimLine.setAttribute('x2', sideX);
+      sideDimLine.setAttribute('y2', minY + targetHPx);
+
+      heightLabel.textContent = manualHeight_cm.toFixed(2) + ' cm';
+      heightLabel.setAttribute('x', sideX - 46);
+      heightLabel.setAttribute('y', 0);
+
+      const hbw = 84, hbh = 22;
+      heightBadgeBg.setAttribute('x', sideX - 46 - hbw / 2);
+      heightBadgeBg.setAttribute('y', -hbh / 2);
+      heightBadgeBg.setAttribute('width', hbw);
+      heightBadgeBg.setAttribute('height', hbh);
+
+      infoW.textContent = manualWidth_cm.toFixed(2);
+      infoH.textContent = manualHeight_cm.toFixed(2);
+
+      // مؤشر التباعد بين الكلمة والشكل
+      updateSeparationDistance();
+
+      // كاميرا مساحة العمل
+      const margin = 80;
+      const vx = minX - margin - 40;
+      const vy = minY - margin - 30;
+      const vw = targetWPx + margin * 2 + 50;
+      const vh = targetHPx + margin * 2 + 40;
+
+      previewSvg.setAttribute('viewBox', vx.toFixed(1) + ' ' + vy.toFixed(1) + ' ' + vw.toFixed(1) + ' ' + vh.toFixed(1));
+
+      const containerRect = artboardContainer.getBoundingClientRect();
+      const maxW = Math.max(containerRect.width - 40, 260);
+      const maxH = Math.max(containerRect.height - 40, 200);
+
+      if (currentZoomMode === '100') {
+        const realW = vw * customZoomLevel;
+        const realH = vh * customZoomLevel;
+        artboardCard.style.width = Math.max(realW, 200) + 'px';
+        artboardCard.style.height = Math.max(realH, 150) + 'px';
+      } else {
+        const aspect = vw / vh;
+        let fitW = maxW;
+        let fitH = fitW / aspect;
+        if (fitH > maxH) {
+          fitH = maxH;
+          fitW = fitH * aspect;
+        }
+        artboardCard.style.width = fitW.toFixed(1) + 'px';
+        artboardCard.style.height = fitH.toFixed(1) + 'px';
+      }
+    }
+
+    function updateSeparationDistance() {
+      const showText = (textGroup.style.display !== 'none');
+      const showShape = (shapeGroup.style.display !== 'none');
+
+      if (!showText || !showShape) {
+        infoSep.style.display = 'none';
+        separationGuideGroup.style.display = 'none';
+        return;
+      }
+
+      try {
+        const b1 = svgText.getBoundingClientRect();
+        const b2 = shapeContainer.getBoundingClientRect();
+        const svgRect = previewSvg.getBoundingClientRect();
+
+        // حساب المسافة الحقيقية بالسنتيمتر بناءً على مقياس العرض الحالي
+        const ctm = previewSvg.getScreenCTM();
+        const pxScale = ctm ? ctm.a : 1.0;
+
+        const gapX1 = b2.left - b1.right;
+        const gapX2 = b1.left - b2.right;
+
+        let sepPx = 0;
+        if (gapX1 > 0) sepPx = gapX1;
+        else if (gapX2 > 0) sepPx = gapX2;
+
+        const sepCm = (sepPx / pxScale) / PX_PER_CM;
+
+        if (sepCm > 0.1) {
+          infoSep.textContent = 'التباعد: ' + sepCm.toFixed(2) + ' cm';
+          infoSep.style.display = '';
+        } else {
+          infoSep.textContent = 'التباعد: متقاربان';
+          infoSep.style.display = '';
+        }
+        separationGuideGroup.style.display = 'none';
+      } catch (e) {
+        infoSep.style.display = 'none';
+      }
+    }
+
+    // =========================================================
+    // 6. التحريك المستقل للكلمة والشكل + تحجيم الشكل بالزوايا
+    // =========================================================
+    let activeDrag = null;
+    let dragStartClient = { x: 0, y: 0 };
+    let dragStartPos = { x: 0, y: 0 };
+    let activeResize = false;
+    let resizeStartClient = { x: 0, y: 0 };
+    let resizeStartScale = 1.0;
+
+    function initDrag(target, e) {
+      if (activeResize) return;
+      activeDrag = target;
+      document.body.classList.add('is-dragging');
+      const src = e.touches ? e.touches[0] : e;
+      dragStartClient = { x: src.clientX, y: src.clientY };
+
+      if (target === 'text') {
+        dragStartPos = { x: textRelX, y: textRelY };
+      } else {
+        dragStartPos = { x: shapeRelX, y: shapeRelY };
+      }
+      hideHint();
+    }
+
+    textGroup.addEventListener('mousedown', (e) => { e.stopPropagation(); initDrag('text', e); e.preventDefault(); });
+    textGroup.addEventListener('touchstart', (e) => { e.stopPropagation(); initDrag('text', e); }, { passive: false });
+
+    shapeGroup.addEventListener('mousedown', (e) => {
+      if (e.target.classList.contains('resize-handle')) return;
+      e.stopPropagation(); initDrag('shape', e); e.preventDefault();
+    });
+    shapeGroup.addEventListener('touchstart', (e) => {
+      if (e.target.classList.contains('resize-handle')) return;
+      e.stopPropagation(); initDrag('shape', e);
+    }, { passive: false });
+
+    // تكبير/تصغير الشكل بواسطة مقابض الزوايا
+    function initResizeShape(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      activeResize = true;
+      document.body.classList.add('is-resizing');
+
+      const src = e.touches ? e.touches[0] : e;
+      resizeStartClient = { x: src.clientX, y: src.clientY };
+      resizeStartScale = shapeScaleRatio;
+      hideHint();
+    }
+
+    [handleTL, handleTR, handleBR, handleBL].forEach(h => {
+      h.addEventListener('mousedown', initResizeShape);
+      h.addEventListener('touchstart', initResizeShape, { passive: false });
+    });
+
+    function handlePointerMove(e) {
+      const src = e.touches ? e.touches[0] : e;
+
+      // تكبير أو تصغير الشكل بالماوس
+      if (activeResize) {
+        if (e.touches && e.cancelable) e.preventDefault();
+        const dx = src.clientX - resizeStartClient.x;
+        const dy = src.clientY - resizeStartClient.y;
+        const delta = (dx + dy) / 120;
+        shapeScaleRatio = Math.max(resizeStartScale + delta, 0.2);
+        renderDesign();
+        return;
+      }
+
+      // تحريك الكلمة أو الشكل بحرية
+      if (activeDrag) {
+        if (e.touches && e.cancelable) e.preventDefault();
+        const ctm = previewSvg.getScreenCTM();
+        const scale = ctm ? ctm.a : 1.0;
+
+        const dx = (src.clientX - dragStartClient.x) / scale;
+        const dy = (src.clientY - dragStartClient.y) / scale;
+
+        if (activeDrag === 'text') {
+          textRelX = dragStartPos.x + dx;
+          textRelY = dragStartPos.y + dy;
+        } else if (activeDrag === 'shape') {
+          shapeRelX = dragStartPos.x + dx;
+          shapeRelY = dragStartPos.y + dy;
+        }
+
+        applyLayoutAndManualDimensions();
+      }
+    }
+
+    function handlePointerEnd() {
+      if (activeDrag) {
+        activeDrag = null;
+        document.body.classList.remove('is-dragging');
+        renderDesign();
+      }
+      if (activeResize) {
+        activeResize = false;
+        document.body.classList.remove('is-resizing');
+        renderDesign();
+      }
+    }
+
+    window.addEventListener('mousemove', handlePointerMove);
+    window.addEventListener('touchmove', handlePointerMove, { passive: false });
+    window.addEventListener('mouseup', handlePointerEnd);
+    window.addEventListener('touchend', handlePointerEnd);
+
+    let hintTimer = setTimeout(() => { dragHint.style.opacity = '0'; }, 5500);
+    function hideHint() { clearTimeout(hintTimer); dragHint.style.opacity = '0'; }
+
+    // =========================================================
+    // 7. القياسات اليدوية (تحديد يدوي دائم للعرض والطول)
+    // =========================================================
+    manualWidthInput.addEventListener('input', () => {
+      const w = parseFloat(manualWidthInput.value);
+      if (w > 0) {
+        manualWidth_cm = w;
+        applyLayoutAndManualDimensions();
+      }
+    });
+    manualHeightInput.addEventListener('input', () => {
+      const h = parseFloat(manualHeightInput.value);
+      if (h > 0) {
+        manualHeight_cm = h;
+        applyLayoutAndManualDimensions();
+      }
+    });
+
+    // إعادة ضبط الترتيب
+    function resetLayout() {
+      const pos = shapePosition.value;
+      shapeScaleRatio = 1.0;
+      textRelX = 0; textRelY = 0;
+      shapeRelX = 0; shapeRelY = 0;
+
+      if (pos === 'right') {
+        textRelX = -120; shapeRelX = 140;
+      } else if (pos === 'left') {
+        textRelX = 120; shapeRelX = -140;
+      } else if (pos === 'top') {
+        shapeRelY = -100; textRelY = 50;
+      } else if (pos === 'bottom') {
+        shapeRelY = 100; textRelY = -50;
+      }
+
+      renderDesign();
+    }
+
+    btnResetLayout.addEventListener('click', resetLayout);
+    shapePosition.addEventListener('change', resetLayout);
+
+    // =========================================================
+    // 8. أزرار الرؤية والتكبير (Zoom Controls)
+    // =========================================================
+    btnFit.addEventListener('click', () => {
+      currentZoomMode = 'fit';
+      btnFit.classList.add('active');
+      btn100.classList.remove('active');
+      applyLayoutAndManualDimensions();
+    });
+
+    btn100.addEventListener('click', () => {
+      currentZoomMode = '100';
+      customZoomLevel = 1.0;
+      btn100.classList.add('active');
+      btnFit.classList.remove('active');
+      applyLayoutAndManualDimensions();
+    });
+
+    btnZoomIn.addEventListener('click', () => {
+      currentZoomMode = '100';
+      customZoomLevel = Math.min(customZoomLevel * 1.25, 4.0);
+      btn100.classList.remove('active');
+      btnFit.classList.remove('active');
+      applyLayoutAndManualDimensions();
+    });
+
+    btnZoomOut.addEventListener('click', () => {
+      currentZoomMode = '100';
+      customZoomLevel = Math.max(customZoomLevel * 0.8, 0.25);
+      btn100.classList.remove('active');
+      btnFit.classList.remove('active');
+      applyLayoutAndManualDimensions();
+    });
+
+    window.addEventListener('resize', () => { applyLayoutAndManualDimensions(); });
+
+    [textInput, fontSelect].forEach(el => {
+      el.addEventListener('input', () => renderDesign());
+      el.addEventListener('change', () => renderDesign());
+    });
+
+    // =========================================================
+    // 9. تصدير SVG قياسي نقي متوافق 100% مع جميع البرامج وماكينات الليزر
+    // =========================================================
+    exportBtn.addEventListener('click', () => {
+      const targetWPx = manualWidth_cm * PX_PER_CM;
+      const targetHPx = manualHeight_cm * PX_PER_CM;
+      const ff = fontSelect.value;
+      const txt = textInput.value || '';
+      const pos = shapePosition.value;
+
+      // 1. استخراج تحويلات النص والشكل
+      const showText = (pos !== 'only' && txt.length > 0);
+      const showShape = (activeShapeKey !== 'none');
+
+      let textStr = '';
+      if (showText) {
+        textStr = '    <g transform="translate(' + textRelX.toFixed(2) + ',' + textRelY.toFixed(2) + ')">\n' +
+                  '      <text x="0" y="0" font-family="' + ff + '" font-size="100" text-anchor="middle" dominant-baseline="central" fill="#000000">' +
+                  escXml(txt) +
+                  '</text>\n    </g>\n';
+      }
+
+      let shapeStr = '';
+      const raw = builtInShapes[activeShapeKey] || customShapes[activeShapeKey];
+      if (showShape && raw) {
+        const gTemp = shapeContainer.querySelector('g');
+        const transformAttr = gTemp ? (gTemp.getAttribute('transform') || '') : '';
+        shapeStr = '    <g transform="translate(' + shapeRelX.toFixed(2) + ',' + shapeRelY.toFixed(2) + ')">\n' +
+                   '      <g transform="' + transformAttr + '" fill="#000000">\n        ' +
+                   raw +
+                   '\n      </g>\n    </g>\n';
+      }
+
+      // حساب التحويل النهائي المطابق تماماً للقياس اليدوي (الكلمة + الشكل = القياس اليدوي)
+      const masterTransform = masterDesignGroup.getAttribute('transform') || '';
+
+      const minX = -targetWPx / 2;
+      const minY = -targetHPx / 2;
+
+      // بناء ملف SVG نقي بمعايير W3C الرسمية دون استدعاءات إنترنت تسبب أخطاء في البرامج
+      const svgHeader = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' +
+        '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n' +
+        '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"\n' +
+        '     width="' + manualWidth_cm.toFixed(2) + 'cm"\n' +
+        '     height="' + manualHeight_cm.toFixed(2) + 'cm"\n' +
+        '     viewBox="' + minX.toFixed(2) + ' ' + minY.toFixed(2) + ' ' + targetWPx.toFixed(2) + ' ' + targetHPx.toFixed(2) + '">\n' +
+        '  <g id="design" transform="' + masterTransform + '">\n' +
+        textStr +
+        shapeStr +
+        '  </g>\n' +
+        '</svg>';
+
+      // تسمية نظيفة بدون تشويه الأحرف تضمن بقاء الامتداد .svg صالحاً 100%
+      const safeFilename = 'design_' + Math.round(manualWidth_cm) + 'x' + Math.round(manualHeight_cm) + 'cm.svg';
+
+      let blob = null;
+      try {
+        blob = new Blob(['\uFEFF' + svgHeader], { type: 'image/svg+xml;charset=utf-8' });
+      } catch (e) {}
+
+      if (blob && window.URL && window.URL.createObjectURL) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = safeFilename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          if (a.parentNode) document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 5000);
+      } else {
+        const dataUri = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgHeader);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = dataUri;
+        a.download = safeFilename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          if (a.parentNode) document.body.removeChild(a);
+        }, 2000);
+      }
+    });
+
+    function escXml(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+    }
+
+    // التشغيل المبدئي
+    resetLayout();
+  </script>
+</body>
+</html>
