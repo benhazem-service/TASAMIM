@@ -31,6 +31,7 @@ SVGApp.dom = {
 
     // بوابة وخانة المدير (فك التشفير وتصدير SVG)
     this.adminToggleBtn = document.getElementById('adminToggleBtn');
+    this.mobileAdminToggleBtn = document.getElementById('mobileAdminToggleBtn');
     this.adminAuthBox = document.getElementById('adminAuthBox');
     this.adminPinInput = document.getElementById('adminPinInput');
     this.adminPinSubmitBtn = document.getElementById('adminPinSubmitBtn');

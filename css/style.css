@@ -57,7 +57,7 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: calc(54px + var(--sat));
+  height: calc(50px + var(--sat));
   padding-top: var(--sat);
   background: var(--panel);
   border-bottom: 1px solid var(--border);
@@ -66,7 +66,7 @@ body {
   padding-left: 12px;
   padding-right: 12px;
   z-index: 50;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .top-bar-title-wrap {
@@ -76,14 +76,14 @@ body {
 }
 
 .top-bar-icon {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 7px;
   box-shadow: 0 2px 5px rgba(37, 99, 235, 0.25);
 }
 
 .top-bar h2 {
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 900;
   color: #0f172a;
 }
@@ -98,11 +98,11 @@ body {
   background: var(--accent);
   color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 7px 12px;
+  border-radius: 7px;
+  padding: 6px 11px;
   font-weight: 700;
   font-family: inherit;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -197,7 +197,7 @@ body {
 }
 
 /* --------------------------------------------------------------------------
-   4. الشريط الجانبي للإعدادات (Sidebar)
+   4. الشريط الجانبي للإعدادات (Sidebar / Bottom Panel on Mobile)
    -------------------------------------------------------------------------- */
 aside {
   width: var(--sidebar-w);
@@ -208,7 +208,6 @@ aside {
   flex-direction: column;
   box-shadow: 2px 0 12px rgba(0, 0, 0, 0.06);
   z-index: 20;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .aside-header {
@@ -219,7 +218,6 @@ aside {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding-top: calc(14px + var(--sat));
 }
 
 .aside-header h1 {
@@ -237,7 +235,6 @@ aside {
   flex-direction: column;
   gap: 12px;
   flex: 1;
-  padding-bottom: calc(24px + var(--sab));
 }
 
 /* زر التثبيت داخل الشريط الجانبي */
@@ -733,7 +730,7 @@ main {
 /* الشريط العائم العلوي للمعلومات */
 .top-floating-bar {
   position: absolute;
-  top: calc(14px + var(--sat));
+  top: 14px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -767,8 +764,8 @@ main {
 /* أزرار التحكم في التكبير والرؤية */
 .view-controls {
   position: absolute;
-  bottom: calc(20px + var(--sab));
-  right: calc(20px + var(--sar));
+  bottom: 20px;
+  right: 20px;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -891,7 +888,7 @@ body.is-resizing .resize-handle {
 /* تلميح السحب والتحريك السفلي */
 .drag-hint {
   position: absolute;
-  bottom: calc(20px + var(--sab));
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(15, 23, 42, 0.85);
@@ -910,108 +907,118 @@ body.is-resizing .resize-handle {
 }
 
 /* --------------------------------------------------------------------------
-   10. التجاوب الكامل مع شاشات الهواتف والأجهزة اللوحية (Responsive Adaptability)
+   10. وضع الهاتف: مساحة العمل ثابتة بالأعلى وتحتها لوحة الإعدادات مباشرة
    -------------------------------------------------------------------------- */
 @media (max-width: 860px) {
   body {
     flex-direction: column;
-  }
-
-  aside {
-    width: 100%;
-    min-width: 0;
-    position: fixed;
-    top: 0;
-    right: 0;
-    height: 100%;
-    height: 100dvh;
-    transform: translateX(110%);
-    z-index: 100;
-    box-shadow: -4px 0 25px rgba(0, 0, 0, 0.15);
-  }
-
-  aside.open {
-    transform: translateX(0);
-  }
-
-  main {
-    padding: 10px;
-    padding-top: calc(64px + var(--sat));
-    padding-bottom: calc(50px + var(--sab));
+    padding-top: calc(50px + var(--sat));
+    overflow: hidden;
   }
 
   .top-bar {
     display: flex;
   }
 
+  /* 1. مساحة العمل (Canvas): ثابتة في النصف العلوي للهاتف */
+  main {
+    flex: none;
+    width: 100%;
+    height: 40vh;
+    min-height: 220px;
+    max-height: 380px;
+    padding: 6px;
+    position: relative;
+    border-bottom: 2px solid #cbd5e1;
+    background: #f1f5f9;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    z-index: 15;
+  }
+
+  .top-floating-bar {
+    top: 6px;
+    font-size: 0.68rem;
+    padding: 3px 10px;
+    gap: 6px;
+    max-width: 96vw;
+  }
+
+  .view-controls {
+    bottom: 6px;
+    right: 8px;
+    padding: 2px 5px;
+  }
+
+  .view-btn {
+    padding: 3px 7px;
+    font-size: 0.7rem;
+  }
+
+  .drag-hint {
+    bottom: 6px;
+    left: 8px;
+    transform: none;
+    font-size: 0.65rem;
+    padding: 3px 8px;
+    max-width: 55vw;
+  }
+
+  /* 2. لوحة الإعدادات: تقع تحت مساحة العمل مباشرة مع تمرير سلس ومريح */
+  aside {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    position: static;
+    transform: none;
+    height: auto;
+    border-left: none;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #ffffff;
+    z-index: 10;
+  }
+
+  .aside-header {
+    display: none; /* إخفاء الترويسة القديمة لترك أقصى مساحة ممكنة للإعدادات */
+  }
+
+  .aside-body {
+    flex: 1;
+    padding: 12px 14px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: calc(24px + var(--sab));
+  }
+
   .shapes-grid {
     grid-template-columns: repeat(5, 1fr);
   }
 
+  #menuToggle,
+  .overlay,
   .menu-close {
-    display: flex !important;
-  }
-
-  .top-floating-bar {
-    top: calc(62px + var(--sat));
-    font-size: 0.7rem;
-    padding: 4px 12px;
-    gap: 8px;
-    max-width: 95vw;
-  }
-
-  .view-controls {
-    bottom: calc(14px + var(--sab));
-    right: 12px;
-    padding: 3px 6px;
-  }
-
-  .view-btn {
-    padding: 4px 8px;
-    font-size: 0.72rem;
-  }
-
-  .drag-hint {
-    bottom: calc(52px + var(--sab));
-    font-size: 0.68rem;
-    padding: 4px 10px;
+    display: none !important;
   }
 }
 
 @media (max-width: 480px) {
+  main {
+    height: 38vh;
+    min-height: 200px;
+  }
+
   .shapes-grid {
     grid-template-columns: repeat(4, 1fr);
   }
 
   .top-floating-bar {
-    font-size: 0.66rem;
-    padding: 3px 10px;
+    font-size: 0.65rem;
+    padding: 2px 8px;
   }
 
   .view-controls #btn100 {
     display: none;
   }
-}
-
-.overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(2px);
-  z-index: 99;
-}
-
-.overlay.active {
-  display: block;
-}
-
-.menu-close {
-  display: none;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.3rem;
-  color: #64748b;
-  padding: 4px;
 }

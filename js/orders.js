@@ -383,6 +383,14 @@ SVGApp.orders = {
     if (SVGApp.dom.adminToggleBtn) {
       SVGApp.dom.adminToggleBtn.addEventListener('click', () => this.toggleAdminSection());
     }
+    if (SVGApp.dom.mobileAdminToggleBtn) {
+      SVGApp.dom.mobileAdminToggleBtn.addEventListener('click', () => {
+        this.toggleAdminSection();
+        if (SVGApp.dom.adminAuthBox && SVGApp.dom.adminAuthBox.scrollIntoView) {
+          SVGApp.dom.adminAuthBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      });
+    }
 
     if (SVGApp.dom.adminPinSubmitBtn) {
       SVGApp.dom.adminPinSubmitBtn.addEventListener('click', () => this.verifyAdminPin());
