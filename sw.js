@@ -5,13 +5,20 @@
  * ==========================================================================
  */
 
-const CACHE_NAME = 'svg-vector-designer-v3';
+const CACHE_NAME = 'svg-vector-designer-v4';
 
 // استخدام مسارات نسبية بدون سلاش في البداية لتعمل داخل أي مجلد فرعي على GitHub Pages
 const CORE_ASSETS = [
   'index.html',
   'manifest.json',
   'css/style.css',
+  'fonts/CampanaScript.otf',
+  'fonts/ArialRoundedBold.ttf',
+  'fonts/CalistoMT.ttf',
+  'fonts/Cameliya.otf',
+  'fonts/AL-Battar.ttf',
+  'fonts/AkhbarMT.ttf',
+  'fonts/arabswell_1.ttf',
   'js/constants.js',
   'js/state.js',
   'js/dom.js',

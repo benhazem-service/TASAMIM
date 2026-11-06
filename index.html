@@ -58,13 +58,87 @@
     </div>
   </div>
 
-  <!-- الشريط الجانبي للإعدادات -->
+  <!-- 1. مساحة العمل والرسم (Canvas Workspace) - في الأعلى دائماً -->
+  <main id="mainCanvas">
+    <!-- الشريط العائم العلوي للمعلومات -->
+    <div class="top-floating-bar" id="topInfoBar">
+      <span>القياس (الكلمة + الشكل): <span class="val" id="infoW">25.00</span> × <span class="val" id="infoH">10.00</span> cm</span>
+      <span>•</span>
+      <span class="sep-badge" id="infoSep">التباعد: -- cm</span>
+    </div>
+
+    <!-- حاوية لوحة الرسم -->
+    <div class="artboard-container" id="artboardContainer">
+      <div class="artboard-card" id="artboardCard">
+        <svg id="previewSvg" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#0284c7"/>
+            </marker>
+          </defs>
+
+          <!-- المجموعة المدمجة (الكلمة + الشكل) تحت السيطرة المباشرة للقياس اليدوي -->
+          <g id="masterDesignGroup">
+            <!-- 1. الكلمة -->
+            <g id="textGroup" class="interactive-group">
+              <rect id="textHitArea" fill="transparent" pointer-events="all"/>
+              <rect id="textSelectionBox" class="drag-selection-box" fill="none" stroke="#2563eb" stroke-width="1.2" rx="4"/>
+              <text id="textLabelBadge" class="drag-label-badge" fill="#2563eb">📝 الكلمة</text>
+              <text id="svgText" x="0" y="0" text-anchor="middle" dominant-baseline="central" fill="#1e293b">مرحبا بك</text>
+            </g>
+
+            <!-- 2. الشكل مع مقابض التكبير والتصغير المباشرة -->
+            <g id="shapeGroup" class="interactive-group">
+              <rect id="shapeHitArea" fill="transparent" pointer-events="all"/>
+              <rect id="shapeSelectionBox" class="drag-selection-box" fill="none" stroke="#10b981" stroke-width="1.2" rx="4"/>
+              <text id="shapeLabelBadge" class="drag-label-badge" fill="#10b981">⭐ الشكل (اسحب المقابض للتكبير)</text>
+              <g id="shapeContainer" fill="#1e293b"></g>
+              <!-- مقابض الزوايا للتحجيم باللمس والماوس -->
+              <circle class="resize-handle" id="handleTL" r="6"/>
+              <circle class="resize-handle" id="handleTR" r="6"/>
+              <circle class="resize-handle" id="handleBR" r="6"/>
+              <circle class="resize-handle" id="handleBL" r="6"/>
+            </g>
+          </g>
+
+          <!-- خطوط القياس اليدوي المحيطة بالتصميم الكلي -->
+          <g id="guideLinesGroup">
+            <rect id="outerDesignRect" fill="none" stroke="#64748b" stroke-width="1.5" stroke-dasharray="5,5" rx="6"/>
+            <line id="topDimLine" stroke="#0284c7" stroke-width="1.8" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+            <rect id="widthBadgeBg" fill="#0284c7" rx="4"/>
+            <text id="widthLabel" fill="#ffffff" font-size="12" font-weight="900" text-anchor="middle" dominant-baseline="central">-- cm</text>
+            <line id="sideDimLine" stroke="#0284c7" stroke-width="1.8" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+            <rect id="heightBadgeBg" fill="#0284c7" rx="4"/>
+            <text id="heightLabel" fill="#ffffff" font-size="12" font-weight="900" text-anchor="middle" dominant-baseline="central">-- cm</text>
+          </g>
+
+          <!-- خط قياس مسافة التباعد -->
+          <g id="separationGuideGroup">
+            <line id="sepLine" stroke="#8b5cf6" stroke-width="1.6" stroke-dasharray="3,3"/>
+            <rect id="sepBadgeRect" fill="#8b5cf6" rx="4"/>
+            <text id="sepBadgeText" fill="#ffffff" font-size="11" font-weight="800" text-anchor="middle" dominant-baseline="central">تباعد: -- cm</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <!-- أزرار التحكم في الرؤية والتكبير -->
+    <div class="view-controls">
+      <button class="view-btn active" id="btnFit">احتواء ⛶</button>
+      <button class="view-btn" id="btn100">حجم 100%</button>
+      <button class="view-btn" id="btnZoomOut">-</button>
+      <button class="view-btn" id="btnZoomIn">+</button>
+    </div>
+
+    <div class="drag-hint" id="dragHint">✥ المس الكلمة أو الشكل للتحريك • المس زوايا الشكل للتكبير والتصغير</div>
+  </main>
+
+  <!-- 2. لوحة الإعدادات والتحكم - تحت مساحة العمل مباشرة -->
   <aside id="sidebar">
     <div class="aside-header">
       <h1>إعدادات الكلمات وأشكال الفيكتور (cm)</h1>
       <div style="display:flex;align-items:center;gap:6px;">
         <button class="admin-toggle-btn" id="adminToggleBtn" title="الدخول لخانة المدير لفك التشفير وتصدير SVG">🔐 المدير</button>
-        <button class="menu-close" id="menuClose">✕</button>
       </div>
     </div>
     <div class="aside-body">
@@ -78,7 +152,7 @@
       <div class="admin-auth-box" id="adminAuthBox">
         <label style="color:#854d0e;">🔐 رمز دخول المدير (الافتراضي: 1234):</label>
         <div style="display:flex;gap:6px;">
-          <input type="password" id="adminPinInput" placeholder="أدخل الرمز السري..." style="flex:1;">
+          <input type="password" id="adminPinInput" placeholder="أدخل الرمز السري..." inputmode="numeric" style="flex:1;">
           <button class="admin-toggle-btn" id="adminPinSubmitBtn" style="background:#ca8a04;">دخول</button>
         </div>
         <div id="adminPinError" style="display:none;font-size:.74rem;color:#dc2626;font-weight:700;"></div>
@@ -108,7 +182,7 @@
 
         <div class="control-group" style="margin-top:4px;border-top:1px dashed #bfdbfe;padding-top:6px;">
           <label style="font-size:.73rem;color:#1e3a8a;">📱 رقم واتساب المدير (لاستقبال الطلبات، اختياري):</label>
-          <input type="text" id="adminWhatsAppInput" placeholder="مثال: 212662065072" style="direction:ltr;text-align:left;font-size:.8rem;padding:5px 8px;">
+          <input type="tel" id="adminWhatsAppInput" placeholder="مثال: 212662065072" inputmode="tel" style="direction:ltr;text-align:left;font-size:.8rem;padding:5px 8px;">
         </div>
       </div>
 
@@ -122,14 +196,14 @@
       <div class="control-group">
         <label>الخط المستخدم:</label>
         <select id="fontSelect">
-          <optgroup label="خطوط عربية جاهزة">
-            <option value="'Cairo', sans-serif">القاهرة (Cairo)</option>
-            <option value="'Amiri', serif">الأميري - نسخ</option>
-            <option value="'Reem Kufi', sans-serif">ريم كوفي</option>
-            <option value="'Kufam', sans-serif">كوفام عصري</option>
-            <option value="'Rakkas', display">رقاص عريض</option>
-            <option value="'Changa', sans-serif">تشانغا كتلية</option>
-            <option value="'Tajawal', sans-serif">تجوال</option>
+          <optgroup label="الخطوط المختارة المدمجة">
+            <option value="'Campana Script PERSONAL USE', cursive">Campana Script PERSONAL USE</option>
+            <option value="'Arial Rounded MT Bold', sans-serif">Arial Rounded MT Bold</option>
+            <option value="'Calisto MT', serif">Calisto MT</option>
+            <option value="'Cameliya', sans-serif">Cameliya</option>
+            <option value="'AL-Battar', sans-serif">AL-Battar</option>
+            <option value="'Akhbar MT', serif">Akhbar MT</option>
+            <option value="'arabswell_1', cursive">arabswell_1</option>
           </optgroup>
           <optgroup id="localFontsGroup" label="خطوط مخصصة ومحملة"></optgroup>
         </select>
@@ -220,11 +294,11 @@
         <div class="dim-inputs-grid">
           <div class="dim-field">
             <label>↔ العرض الإجمالي (cm):</label>
-            <input type="number" id="manualWidthInput" value="25.0" min="1" step="0.5">
+            <input type="number" id="manualWidthInput" value="25.0" min="1" step="0.5" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*">
           </div>
           <div class="dim-field">
             <label>↕ الطول الإجمالي (cm):</label>
-            <input type="number" id="manualHeightInput" value="10.0" min="1" step="0.5">
+            <input type="number" id="manualHeightInput" value="10.0" min="1" step="0.5" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*">
           </div>
         </div>
         <button class="dim-reset-btn" id="btnResetLayout">↺ إعادة ضبط الترتيب والتوسيط</button>
@@ -239,7 +313,7 @@
 
         <div class="control-group">
           <label>رقم هاتف الزبون:</label>
-          <input type="text" id="customerPhoneInput" placeholder="مثال: 0662065072" style="direction:ltr;text-align:center;font-weight:800;">
+          <input type="tel" id="customerPhoneInput" placeholder="مثال: 0662065072" inputmode="tel" style="direction:ltr;text-align:center;font-weight:800;">
         </div>
 
         <button class="btn-whatsapp" id="whatsappSendBtn">
@@ -250,81 +324,6 @@
       </div>
     </div>
   </aside>
-
-  <!-- مساحة العمل والرسم (Canvas Workspace) -->
-  <main>
-    <!-- الشريط العائم العلوي للمعلومات -->
-    <div class="top-floating-bar" id="topInfoBar">
-      <span>القياس (الكلمة + الشكل): <span class="val" id="infoW">25.00</span> × <span class="val" id="infoH">10.00</span> cm</span>
-      <span>•</span>
-      <span class="sep-badge" id="infoSep">التباعد: -- cm</span>
-    </div>
-
-    <!-- حاوية لوحة الرسم -->
-    <div class="artboard-container" id="artboardContainer">
-      <div class="artboard-card" id="artboardCard">
-        <svg id="previewSvg" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-              <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#0284c7"/>
-            </marker>
-          </defs>
-
-          <!-- المجموعة المدمجة (الكلمة + الشكل) تحت السيطرة المباشرة للقياس اليدوي -->
-          <g id="masterDesignGroup">
-            <!-- 1. الكلمة -->
-            <g id="textGroup" class="interactive-group">
-              <rect id="textHitArea" fill="transparent" pointer-events="all"/>
-              <rect id="textSelectionBox" class="drag-selection-box" fill="none" stroke="#2563eb" stroke-width="1.2" rx="4"/>
-              <text id="textLabelBadge" class="drag-label-badge" fill="#2563eb">📝 الكلمة</text>
-              <text id="svgText" x="0" y="0" text-anchor="middle" dominant-baseline="central" fill="#1e293b">مرحبا بك</text>
-            </g>
-
-            <!-- 2. الشكل مع مقابض التكبير والتصغير المباشرة -->
-            <g id="shapeGroup" class="interactive-group">
-              <rect id="shapeHitArea" fill="transparent" pointer-events="all"/>
-              <rect id="shapeSelectionBox" class="drag-selection-box" fill="none" stroke="#10b981" stroke-width="1.2" rx="4"/>
-              <text id="shapeLabelBadge" class="drag-label-badge" fill="#10b981">⭐ الشكل (اسحب المقابض للتكبير)</text>
-              <g id="shapeContainer" fill="#1e293b"></g>
-              <!-- مقابض الزوايا للتحجيم باللمس والماوس -->
-              <circle class="resize-handle" id="handleTL" r="6"/>
-              <circle class="resize-handle" id="handleTR" r="6"/>
-              <circle class="resize-handle" id="handleBR" r="6"/>
-              <circle class="resize-handle" id="handleBL" r="6"/>
-            </g>
-          </g>
-
-          <!-- خطوط القياس اليدوي المحيطة بالتصميم الكلي -->
-          <g id="guideLinesGroup">
-            <rect id="outerDesignRect" fill="none" stroke="#64748b" stroke-width="1.5" stroke-dasharray="5,5" rx="6"/>
-            <line id="topDimLine" stroke="#0284c7" stroke-width="1.8" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
-            <rect id="widthBadgeBg" fill="#0284c7" rx="4"/>
-            <text id="widthLabel" fill="#ffffff" font-size="12" font-weight="900" text-anchor="middle" dominant-baseline="central">-- cm</text>
-            <line id="sideDimLine" stroke="#0284c7" stroke-width="1.8" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
-            <rect id="heightBadgeBg" fill="#0284c7" rx="4"/>
-            <text id="heightLabel" fill="#ffffff" font-size="12" font-weight="900" text-anchor="middle" dominant-baseline="central">-- cm</text>
-          </g>
-
-          <!-- خط قياس مسافة التباعد -->
-          <g id="separationGuideGroup">
-            <line id="sepLine" stroke="#8b5cf6" stroke-width="1.6" stroke-dasharray="3,3"/>
-            <rect id="sepBadgeRect" fill="#8b5cf6" rx="4"/>
-            <text id="sepBadgeText" fill="#ffffff" font-size="11" font-weight="800" text-anchor="middle" dominant-baseline="central">تباعد: -- cm</text>
-          </g>
-        </svg>
-      </div>
-    </div>
-
-    <!-- أزرار التحكم في الرؤية والتكبير -->
-    <div class="view-controls">
-      <button class="view-btn active" id="btnFit">احتواء ⛶</button>
-      <button class="view-btn" id="btn100">حجم 100%</button>
-      <button class="view-btn" id="btnZoomOut">-</button>
-      <button class="view-btn" id="btnZoomIn">+</button>
-    </div>
-
-    <div class="drag-hint" id="dragHint">✥ المس الكلمة أو الشكل للتحريك • المس زوايا الشكل للتكبير والتصغير</div>
-  </main>
 
   <!-- الملفات البرمجية المقسمة وفق هيكل نظيف ومستقل -->
   <script src="js/constants.js"></script>

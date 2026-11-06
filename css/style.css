@@ -4,6 +4,65 @@
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
+   0. تعريف الخطوط المدمجة والمخصصة (Custom Bundled Fonts)
+   -------------------------------------------------------------------------- */
+@font-face {
+  font-family: 'Campana Script PERSONAL USE';
+  src: url('../fonts/CampanaScript.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Arial Rounded MT Bold';
+  src: url('../fonts/ArialRoundedBold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Calisto MT';
+  src: url('../fonts/CalistoMT.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Cameliya';
+  src: url('../fonts/Cameliya.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'AL-Battar';
+  src: url('../fonts/AL-Battar.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Akhbar MT';
+  src: url('../fonts/AkhbarMT.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'arabswell_1';
+  src: url('../fonts/arabswell_1.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --------------------------------------------------------------------------
    1. المتغيرات وإعدادات الصفحة الأساسية (Variables & Base Reset)
    -------------------------------------------------------------------------- */
 :root {
