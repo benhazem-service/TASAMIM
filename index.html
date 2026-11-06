@@ -2,24 +2,61 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>مصمم الكلمات وأشكال الفيكتور بالقياسات الحقيقية (cm)</title>
   
+  <!-- إعدادات تطبيق الهاتف المتقدمة (PWA & Mobile Meta) -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="مصمم الفيكتور">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="مصمم الفيكتور">
+  <meta name="description" content="تطبيق تصميم الكلمات العربية وأشكال الفيكتور بالقياسات الحقيقية بالسنتيمتر وإرسال الطلبات المشفرة عبر الواتساب">
+  
+  <!-- أيقونات التطبيق للشاشات المختلفة وسطح الهاتف -->
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+
   <!-- خطوط Google Fonts العربية -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Cairo:wght@700;900&family=Changa:wght@700&family=Kufam:wght@700&family=Rakkas&family=Reem+Kufi:wght@700&family=Tajawal:wght@700&display=swap" rel="stylesheet">
   
-  <!-- الأنماط المنسقة للمشروع -->
+  <!-- الأنماط المنسقة للمشروع والمحسنة للهواتف -->
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <!-- الشريط العلوي لشاشات الهواتف -->
-  <div class="top-bar">
-    <h2>مصمم الفيكتور (cm)</h2>
-    <button class="top-bar-btn" id="menuToggle">الإعدادات ☰</button>
-  </div>
+  <!-- الشريط العلوي لشاشات الهواتف واللوحي -->
+  <header class="top-bar">
+    <div class="top-bar-title-wrap">
+      <img src="icons/icon.svg" alt="أيقونة التطبيق" class="top-bar-icon">
+      <h2>مصمم الفيكتور (cm)</h2>
+    </div>
+    <div class="top-bar-actions">
+      <button class="top-bar-btn install-btn-nav" id="mobileInstallBtn" style="display:none;" title="تثبيت التطبيق على هاتفك">📲 تثبيت</button>
+      <button class="top-bar-btn" id="menuToggle">الإعدادات ☰</button>
+    </div>
+  </header>
   <div class="overlay" id="overlay"></div>
+
+  <!-- بنر عائم لتثبيت التطبيق على سطح الهاتف -->
+  <div class="pwa-install-banner" id="pwaInstallBanner">
+    <div class="pwa-banner-content">
+      <img src="icons/icon.svg" alt="أيقونة" class="pwa-banner-icon">
+      <div class="pwa-banner-text">
+        <span class="pwa-banner-title">تثبيت التطبيق على هاتفك</span>
+        <span class="pwa-banner-desc">أضف التطبيق لسطح الشاشة لاستخدامه بملء الشاشة بدون متصفح</span>
+      </div>
+    </div>
+    <div class="pwa-banner-actions">
+      <button class="pwa-btn-install" id="bannerInstallActionBtn">تثبيت الآن</button>
+      <button class="pwa-btn-dismiss" id="bannerDismissBtn" title="إغلاق">✕</button>
+    </div>
+  </div>
 
   <!-- الشريط الجانبي للإعدادات -->
   <aside id="sidebar">
@@ -31,6 +68,12 @@
       </div>
     </div>
     <div class="aside-body">
+      <!-- زر تثبيت التطبيق داخل القائمة الجانبية -->
+      <div class="sidebar-install-box" id="sidebarInstallBtn">
+        <span>📲 تثبيت هذا التطبيق على هاتفك:</span>
+        <button class="btn-sidebar-install">تثبيت التطبيق</button>
+      </div>
+
       <!-- بوابة التحقق السري للمدير -->
       <div class="admin-auth-box" id="adminAuthBox">
         <label style="color:#854d0e;">🔐 رمز دخول المدير (الافتراضي: 1234):</label>
@@ -75,7 +118,7 @@
         <input type="text" id="textInput" value="مرحبا بك">
       </div>
 
-      <!-- اختيار الخطوط -->
+      <!-- اختيار الخطوط ورفع خطوط من الهاتف والحاسوب -->
       <div class="control-group">
         <label>الخط المستخدم:</label>
         <select id="fontSelect">
@@ -88,9 +131,15 @@
             <option value="'Changa', sans-serif">تشانغا كتلية</option>
             <option value="'Tajawal', sans-serif">تجوال</option>
           </optgroup>
-          <optgroup id="localFontsGroup" label="خطوط الحاسوب"></optgroup>
+          <optgroup id="localFontsGroup" label="خطوط مخصصة ومحملة"></optgroup>
         </select>
-        <button class="btn-font" id="loadFontsBtn" style="margin-top:4px;">قراءة جميع خطوط الحاسوب</button>
+        <div style="display:flex;gap:6px;margin-top:4px;">
+          <label class="custom-upload-box" for="fontFileInput" style="flex:1;padding:5px;font-size:.73rem;">
+            <span>📁 إضافة خط (TTF/OTF)</span>
+            <input type="file" id="fontFileInput" accept=".ttf,.otf,.woff,.woff2" style="display:none;">
+          </label>
+          <button class="btn-font" id="loadFontsBtn" style="flex:1;padding:5px;font-size:.73rem;">قراءة خطوط الجهاز</button>
+        </div>
       </div>
 
       <!-- الخطوط المفضلة -->
@@ -108,7 +157,7 @@
       <div class="shapes-section">
         <label>الأشكال والزخارف (Vector):</label>
         <label class="custom-upload-box" for="svgFileInput">
-          <span>📁 رفع شكل SVG من حاسوبك</span>
+          <span>📁 رفع شكل SVG من هاتفك أو حاسوبك</span>
           <input type="file" id="svgFileInput" accept=".svg" style="display:none;">
         </label>
         <div class="shapes-grid" id="shapesGrid">
@@ -206,7 +255,7 @@
   <main>
     <!-- الشريط العائم العلوي للمعلومات -->
     <div class="top-floating-bar" id="topInfoBar">
-      <span>القياس الإجمالي (الكلمة + الشكل): <span class="val" id="infoW">25.00</span> × <span class="val" id="infoH">10.00</span> cm</span>
+      <span>القياس (الكلمة + الشكل): <span class="val" id="infoW">25.00</span> × <span class="val" id="infoH">10.00</span> cm</span>
       <span>•</span>
       <span class="sep-badge" id="infoSep">التباعد: -- cm</span>
     </div>
@@ -237,7 +286,7 @@
               <rect id="shapeSelectionBox" class="drag-selection-box" fill="none" stroke="#10b981" stroke-width="1.2" rx="4"/>
               <text id="shapeLabelBadge" class="drag-label-badge" fill="#10b981">⭐ الشكل (اسحب المقابض للتكبير)</text>
               <g id="shapeContainer" fill="#1e293b"></g>
-              <!-- مقابض الزوايا للتحجيم بالماوس -->
+              <!-- مقابض الزوايا للتحجيم باللمس والماوس -->
               <circle class="resize-handle" id="handleTL" r="6"/>
               <circle class="resize-handle" id="handleTR" r="6"/>
               <circle class="resize-handle" id="handleBR" r="6"/>
@@ -269,12 +318,12 @@
     <!-- أزرار التحكم في الرؤية والتكبير -->
     <div class="view-controls">
       <button class="view-btn active" id="btnFit">احتواء ⛶</button>
-      <button class="view-btn" id="btn100">حجم حقيقي 100%</button>
+      <button class="view-btn" id="btn100">حجم 100%</button>
       <button class="view-btn" id="btnZoomOut">-</button>
       <button class="view-btn" id="btnZoomIn">+</button>
     </div>
 
-    <div class="drag-hint" id="dragHint">✥ اسحب الكلمة أو الشكل للتحريك • اسحب زوايا الشكل بالماوس أو السلايدر للتكبير والتصغير</div>
+    <div class="drag-hint" id="dragHint">✥ المس الكلمة أو الشكل للتحريك • المس زوايا الشكل للتكبير والتصغير</div>
   </main>
 
   <!-- الملفات البرمجية المقسمة وفق هيكل نظيف ومستقل -->
@@ -287,6 +336,7 @@
   <script src="js/interaction.js"></script>
   <script src="js/export.js"></script>
   <script src="js/orders.js"></script>
+  <script src="js/pwa.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
