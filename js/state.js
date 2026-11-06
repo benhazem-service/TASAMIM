@@ -24,8 +24,8 @@ SVGApp.state = {
   customZoomLevel: 1.0,
 
   // القياسات اليدوية الإجمالية (بالسنتيمتر): (الكلمة + الشكل = القياس المدخل)
-  manualWidth_cm: 25.0,
-  manualHeight_cm: 10.0,
+  manualWidth_cm: 20.0,
+  manualHeight_cm: 4.0,
 
   // الإحداثيات والمقاييس النسبية للكلمة والشكل داخل التصميم
   textRelX: -120,

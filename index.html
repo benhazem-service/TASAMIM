@@ -38,7 +38,7 @@
     </div>
     <div class="top-bar-actions">
       <button class="top-bar-btn install-btn-nav" id="mobileInstallBtn" style="display:none;" title="تثبيت التطبيق على هاتفك">📲 تثبيت</button>
-      <button class="admin-toggle-btn" id="mobileAdminToggleBtn" title="الدخول لخانة المدير لفك التشفير وتصدير SVG">🔐 المدير</button>
+      <button class="admin-toggle-btn" id="mobileAdminToggleBtn" title="الدخول لخانة المطبعة لفك التشفير وتصدير SVG">🔐 المطبعة</button>
     </div>
   </header>
   <div class="overlay" id="overlay"></div>
@@ -62,7 +62,7 @@
   <main id="mainCanvas">
     <!-- الشريط العائم العلوي للمعلومات وأداة القفل -->
     <div class="top-floating-bar" id="topInfoBar">
-      <span>القياس (الكلمة + الشكل): <span class="val" id="infoW">25.00</span> × <span class="val" id="infoH">10.00</span> cm</span>
+      <span>القياس (الكلمة + الشكل): <span class="val" id="infoW">20.00</span> × <span class="val" id="infoH">4.00</span> cm</span>
       <span>•</span>
       <span class="sep-badge" id="infoSep">التباعد: -- cm</span>
       <button class="lock-toggle-btn locked" id="lockToggleBtn" title="التصميم مقفل (اضغط للفتح والتحريك اليدوي)">🔒 مقفل</button>
@@ -139,7 +139,7 @@
     <div class="aside-header">
       <h1>إعدادات الكلمات وأشكال الفيكتور (cm)</h1>
       <div style="display:flex;align-items:center;gap:6px;">
-        <button class="admin-toggle-btn" id="adminToggleBtn" title="الدخول لخانة المدير لفك التشفير وتصدير SVG">🔐 المدير</button>
+        <button class="admin-toggle-btn" id="adminToggleBtn" title="الدخول لخانة المطبعة لفك التشفير وتصدير SVG">🔐 المطبعة</button>
       </div>
     </div>
     <div class="aside-body">
@@ -149,9 +149,9 @@
         <button class="btn-sidebar-install">تثبيت التطبيق</button>
       </div>
 
-      <!-- بوابة التحقق السري للمدير -->
+      <!-- بوابة التحقق السري للمطبعة -->
       <div class="admin-auth-box" id="adminAuthBox">
-        <label style="color:#854d0e;">🔐 رمز دخول المدير:</label>
+        <label style="color:#854d0e;">🔐 رمز دخول المطبعة:</label>
         <div style="display:flex;gap:6px;">
           <input type="password" id="adminPinInput" placeholder="أدخل الرمز السري..." inputmode="numeric" style="flex:1;">
           <button class="admin-toggle-btn" id="adminPinSubmitBtn" style="background:#ca8a04;">دخول</button>
@@ -159,10 +159,10 @@
         <div id="adminPinError" style="display:none;font-size:.74rem;color:#dc2626;font-weight:700;"></div>
       </div>
 
-      <!-- خانة المدير الخاصة: تحويل الملف المشفر إلى SVG وتصديره -->
+      <!-- خانة المطبعة الخاصة: تحويل الملف المشفر إلى SVG وتصديره -->
       <div class="admin-section-body" id="adminSectionBody">
         <div class="admin-section-title">
-          <span>🛠️ خانة المدير (تحويل المشفر إلى SVG)</span>
+          <span>🛠️ خانة المطبعة (تحويل المشفر إلى SVG)</span>
           <button class="dim-reset-btn" id="adminResetCounterBtn" title="تصفير عداد الطلبات التسلسلي" style="padding:2px 7px;font-size:.68rem;">تصفير العداد</button>
         </div>
 
@@ -181,13 +181,13 @@
           ⬇ تصدير التصميم المعروض حالياً كـ SVG
         </button>
 
-        <!-- رفع شكل SVG خاص بالمدير -->
+        <!-- رفع شكل SVG خاص بالمطبعة -->
         <label class="custom-upload-box" for="svgFileInput" style="margin-top:4px;border-color:#10b981;color:#047857;">
           <span>📁 رفع شكل SVG مخصص من حاسوبك</span>
           <input type="file" id="svgFileInput" accept=".svg" style="display:none;">
         </label>
 
-        <!-- رفع خط خاص بالمدير -->
+        <!-- رفع خط خاص بالمطبعة -->
         <div style="display:flex;gap:6px;margin-top:4px;">
           <label class="custom-upload-box" for="fontFileInput" style="flex:1;padding:5px;font-size:.73rem;border-color:#6366f1;color:#4338ca;">
             <span>📁 إضافة خط (TTF/OTF)</span>
@@ -197,7 +197,7 @@
         </div>
 
         <div class="control-group" style="margin-top:4px;border-top:1px dashed #bfdbfe;padding-top:6px;">
-          <label style="font-size:.73rem;color:#1e3a8a;">📱 رقم واتساب المدير (لاستقبال الطلبات، اختياري):</label>
+          <label style="font-size:.73rem;color:#1e3a8a;">📱 رقم واتساب المطبعة (لاستقبال الطلبات تلقائياً):</label>
           <input type="tel" id="adminWhatsAppInput" placeholder="مثال: 212662065072" inputmode="tel" style="direction:ltr;text-align:left;font-size:.8rem;padding:5px 8px;">
         </div>
       </div>
@@ -288,11 +288,11 @@
         <div class="dim-inputs-grid">
           <div class="dim-field">
             <label>↔ العرض الإجمالي (cm):</label>
-            <input type="number" id="manualWidthInput" value="25.0" min="1" step="0.5" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*">
+            <input type="number" id="manualWidthInput" value="20.0" min="1" step="0.5" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*">
           </div>
           <div class="dim-field">
             <label>↕ الطول الإجمالي (cm):</label>
-            <input type="number" id="manualHeightInput" value="10.0" min="1" step="0.5" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*">
+            <input type="number" id="manualHeightInput" value="4.0" min="1" step="0.5" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*">
           </div>
         </div>
         <button class="dim-reset-btn" id="btnResetLayout">↺ إعادة ضبط الترتيب والتوسيط</button>
@@ -307,7 +307,7 @@
 
         <div class="control-group">
           <label>رقم هاتف الزبون:</label>
-          <input type="tel" id="customerPhoneInput" placeholder="مثال: 0662065072" inputmode="tel" style="direction:ltr;text-align:center;font-weight:800;">
+          <input type="tel" id="customerPhoneInput" placeholder="أدخل رقم هاتفك..." inputmode="tel" style="direction:ltr;text-align:center;font-weight:800;">
         </div>
 
         <button class="btn-whatsapp" id="whatsappSendBtn">

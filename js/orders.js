@@ -242,18 +242,21 @@ SVGApp.orders = {
       SVGApp.dom.customerStatusMsg.style.display = 'block';
     }
 
-    // تجهيز رسالة الواتساب
-    const adminWhatsApp = this.cleanPhoneNumber(localStorage.getItem('svgAdminWhatsApp') || '').replace(/^\+/, '');
+    // تجهيز رقم واتساب المطبعة المستلم
+    const savedAdminPhone = localStorage.getItem('svgAdminWhatsApp');
+    const defaultPrintPhone = (window.SVGApp && SVGApp.DEFAULT_PRINT_SHOP_WHATSAPP) || '212662065072';
+    const printShopWhatsApp = this.cleanPhoneNumber(savedAdminPhone || defaultPrintPhone).replace(/^\+/, '');
+
     const msgLines = [
-      'مرحباً، أود إرسال طلب تصميم فيكتور جديد:',
+      'مرحباً، أود إرسال طلب تصميم فيكتور جديد للمطبعة:',
       '📄 رقم الملف: ' + orderId,
-      '📱 رقم الهاتف: ' + cleanPhone,
+      '📱 رقم هاتف الزبون: ' + cleanPhone,
       '📏 القياس المطلوب: ' + SVGApp.state.manualWidth_cm.toFixed(1) + ' × ' + SVGApp.state.manualHeight_cm.toFixed(1) + ' cm',
       '📎 (يرجى إرفاق الملف المشفر المحفوظ: ' + savedFilename + ')'
     ];
     const encodedMsg = encodeURIComponent(msgLines.join('\n'));
-    const waUrl = adminWhatsApp
-      ? ('https://wa.me/' + adminWhatsApp + '?text=' + encodedMsg)
+    const waUrl = printShopWhatsApp
+      ? ('https://wa.me/' + printShopWhatsApp + '?text=' + encodedMsg)
       : ('https://api.whatsapp.com/send?text=' + encodedMsg);
 
     window.open(waUrl, '_blank');
@@ -392,7 +395,7 @@ SVGApp.orders = {
    * ربط أحداث قسم الزبون وقسم المدير
    */
   bindEvents() {
-    // استعادة رقم هاتف الزبون المحفوظ إن وجد
+    // استعادة رقم هاتف الزبون المحفوظ إن وجد (بدون فرض رقم افتراضي)
     const savedPhone = localStorage.getItem('svgCustomerPhone') || '';
     if (SVGApp.dom.customerPhoneInput && savedPhone) {
       SVGApp.dom.customerPhoneInput.value = savedPhone;
@@ -448,11 +451,17 @@ SVGApp.orders = {
       });
     }
 
-    // إعدادات رقم واتساب المدير وتصفير العداد
+    // إعدادات رقم واتساب المطبعة وتصفير العداد
     if (SVGApp.dom.adminWhatsAppInput) {
-      SVGApp.dom.adminWhatsAppInput.value = localStorage.getItem('svgAdminWhatsApp') || '';
+      const currentShopPhone = localStorage.getItem('svgAdminWhatsApp') || (window.SVGApp && SVGApp.DEFAULT_PRINT_SHOP_WHATSAPP) || '212662065072';
+      SVGApp.dom.adminWhatsAppInput.value = currentShopPhone;
       SVGApp.dom.adminWhatsAppInput.addEventListener('input', () => {
-        localStorage.setItem('svgAdminWhatsApp', SVGApp.dom.adminWhatsAppInput.value.trim());
+        const val = SVGApp.dom.adminWhatsAppInput.value.trim();
+        if (val) {
+          localStorage.setItem('svgAdminWhatsApp', val);
+        } else {
+          localStorage.removeItem('svgAdminWhatsApp');
+        }
       });
     }
 
