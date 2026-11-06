@@ -96,6 +96,7 @@ SVGApp.dom = {
     this.infoW = document.getElementById('infoW');
     this.infoH = document.getElementById('infoH');
     this.infoSep = document.getElementById('infoSep');
+    this.lockToggleBtn = document.getElementById('lockToggleBtn');
     this.dragHint = document.getElementById('dragHint');
     this.btnFit = document.getElementById('btnFit');
     this.btn100 = document.getElementById('btn100');

@@ -60,11 +60,12 @@
 
   <!-- 1. مساحة العمل والرسم (Canvas Workspace) - في الأعلى دائماً -->
   <main id="mainCanvas">
-    <!-- الشريط العائم العلوي للمعلومات -->
+    <!-- الشريط العائم العلوي للمعلومات وأداة القفل -->
     <div class="top-floating-bar" id="topInfoBar">
       <span>القياس (الكلمة + الشكل): <span class="val" id="infoW">25.00</span> × <span class="val" id="infoH">10.00</span> cm</span>
       <span>•</span>
       <span class="sep-badge" id="infoSep">التباعد: -- cm</span>
+      <button class="lock-toggle-btn locked" id="lockToggleBtn" title="التصميم مقفل (اضغط للفتح والتحريك اليدوي)">🔒 مقفل</button>
     </div>
 
     <!-- حاوية لوحة الرسم -->
@@ -150,7 +151,7 @@
 
       <!-- بوابة التحقق السري للمدير -->
       <div class="admin-auth-box" id="adminAuthBox">
-        <label style="color:#854d0e;">🔐 رمز دخول المدير (الافتراضي: 1234):</label>
+        <label style="color:#854d0e;">🔐 رمز دخول المدير:</label>
         <div style="display:flex;gap:6px;">
           <input type="password" id="adminPinInput" placeholder="أدخل الرمز السري..." inputmode="numeric" style="flex:1;">
           <button class="admin-toggle-btn" id="adminPinSubmitBtn" style="background:#ca8a04;">دخول</button>
@@ -180,6 +181,21 @@
           ⬇ تصدير التصميم المعروض حالياً كـ SVG
         </button>
 
+        <!-- رفع شكل SVG خاص بالمدير -->
+        <label class="custom-upload-box" for="svgFileInput" style="margin-top:4px;border-color:#10b981;color:#047857;">
+          <span>📁 رفع شكل SVG مخصص من حاسوبك</span>
+          <input type="file" id="svgFileInput" accept=".svg" style="display:none;">
+        </label>
+
+        <!-- رفع خط خاص بالمدير -->
+        <div style="display:flex;gap:6px;margin-top:4px;">
+          <label class="custom-upload-box" for="fontFileInput" style="flex:1;padding:5px;font-size:.73rem;border-color:#6366f1;color:#4338ca;">
+            <span>📁 إضافة خط (TTF/OTF)</span>
+            <input type="file" id="fontFileInput" accept=".ttf,.otf,.woff,.woff2" style="display:none;">
+          </label>
+          <button class="btn-font" id="loadFontsBtn" style="flex:1;padding:5px;font-size:.73rem;">قراءة خطوط الجهاز</button>
+        </div>
+
         <div class="control-group" style="margin-top:4px;border-top:1px dashed #bfdbfe;padding-top:6px;">
           <label style="font-size:.73rem;color:#1e3a8a;">📱 رقم واتساب المدير (لاستقبال الطلبات، اختياري):</label>
           <input type="tel" id="adminWhatsAppInput" placeholder="مثال: 212662065072" inputmode="tel" style="direction:ltr;text-align:left;font-size:.8rem;padding:5px 8px;">
@@ -192,48 +208,26 @@
         <input type="text" id="textInput" value="مرحبا بك">
       </div>
 
-      <!-- اختيار الخطوط ورفع خطوط من الهاتف والحاسوب -->
+      <!-- اختيار الخطوط -->
       <div class="control-group">
         <label>الخط المستخدم:</label>
         <select id="fontSelect">
           <optgroup label="الخطوط المختارة المدمجة">
+            <option value="'arabswell_1', cursive" selected>arabswell_1 (مغربي أصيل)</option>
+            <option value="'AL-Battar', sans-serif">AL-Battar (البتار كوفي عريض)</option>
+            <option value="'Akhbar MT', serif">Akhbar MT (أخبار)</option>
+            <option value="'Cameliya', cursive">Cameliya</option>
             <option value="'Campana Script PERSONAL USE', cursive">Campana Script PERSONAL USE</option>
             <option value="'Arial Rounded MT Bold', sans-serif">Arial Rounded MT Bold</option>
             <option value="'Calisto MT', serif">Calisto MT</option>
-            <option value="'Cameliya', sans-serif">Cameliya</option>
-            <option value="'AL-Battar', sans-serif">AL-Battar</option>
-            <option value="'Akhbar MT', serif">Akhbar MT</option>
-            <option value="'arabswell_1', cursive">arabswell_1</option>
           </optgroup>
-          <optgroup id="localFontsGroup" label="خطوط مخصصة ومحملة"></optgroup>
+          <optgroup id="localFontsGroup" label="خطوط مخصصة"></optgroup>
         </select>
-        <div style="display:flex;gap:6px;margin-top:4px;">
-          <label class="custom-upload-box" for="fontFileInput" style="flex:1;padding:5px;font-size:.73rem;">
-            <span>📁 إضافة خط (TTF/OTF)</span>
-            <input type="file" id="fontFileInput" accept=".ttf,.otf,.woff,.woff2" style="display:none;">
-          </label>
-          <button class="btn-font" id="loadFontsBtn" style="flex:1;padding:5px;font-size:.73rem;">قراءة خطوط الجهاز</button>
-        </div>
-      </div>
-
-      <!-- الخطوط المفضلة -->
-      <div class="font-fav-section">
-        <div style="display:flex;align-items:center;justify-content:space-between;">
-          <span style="font-size:.8rem;font-weight:700;color:#334155;">⭐ الخطوط المفضلة</span>
-          <button class="btn-add-fav" id="addFavBtn">+ أضف للمفضلة</button>
-        </div>
-        <div class="font-fav-list" id="favList">
-          <div style="font-size:.75rem;color:#94a3b8;text-align:center;padding:8px;">اختر خطاً ثم اضغط + أضف للمفضلة</div>
-        </div>
       </div>
 
       <!-- قسم الأشكال والزخارف (Vector) -->
       <div class="shapes-section">
         <label>الأشكال والزخارف (Vector):</label>
-        <label class="custom-upload-box" for="svgFileInput">
-          <span>📁 رفع شكل SVG من هاتفك أو حاسوبك</span>
-          <input type="file" id="svgFileInput" accept=".svg" style="display:none;">
-        </label>
         <div class="shapes-grid" id="shapesGrid">
           <button class="shape-btn" data-shape="none" title="بدون شكل">✕</button>
           <button class="shape-btn active" data-shape="crescent" title="هلال ونجمة">

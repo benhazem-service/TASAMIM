@@ -16,6 +16,9 @@ SVGApp.state = {
   // الخطوط المفضلة (محفوظة في التخزين المحلي)
   favoriteFonts: JSON.parse(localStorage.getItem('favFonts') || '[]'),
 
+  // حالة قفل التحريك اليدوي في مساحة العمل (الوضع الافتراضي: مقفل true)
+  isDesignLocked: true,
+
   // وضع الرؤية ومستوى التكبير
   currentZoomMode: 'fit',
   customZoomLevel: 1.0,

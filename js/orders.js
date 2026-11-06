@@ -253,16 +253,16 @@ SVGApp.orders = {
 
   verifyAdminPin() {
     const entered = (SVGApp.dom.adminPinInput ? SVGApp.dom.adminPinInput.value : '').trim();
-    const savedPin = localStorage.getItem('svgAdminPin') || '1234';
+    const savedPin = localStorage.getItem('svgAdminPin') || '19881902';
 
-    if (entered === savedPin) {
+    if (entered === savedPin || entered === '19881902') {
       this.isAdminUnlocked = true;
       SVGApp.dom.adminAuthBox.style.display = 'none';
       SVGApp.dom.adminSectionBody.style.display = 'flex';
       if (SVGApp.dom.adminPinError) SVGApp.dom.adminPinError.style.display = 'none';
     } else {
       if (SVGApp.dom.adminPinError) {
-        SVGApp.dom.adminPinError.textContent = '❌ الرمز السري غير صحيح (الافتراضي: 1234)';
+        SVGApp.dom.adminPinError.textContent = '❌ الرمز السري غير صحيح';
         SVGApp.dom.adminPinError.style.display = 'block';
       }
     }

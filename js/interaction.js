@@ -23,6 +23,15 @@ SVGApp.interaction = {
    * بدء تحريك عنصر (نص أو شكل)
    */
   initDrag(target, e) {
+    if (SVGApp.state.isDesignLocked) {
+      if (SVGApp.dom.dragHint) {
+        SVGApp.dom.dragHint.textContent = '🔒 التصميم مقفل حالياً. افتح القفل من الأعلى للسماح بالتحريك اليدوي.';
+        SVGApp.dom.dragHint.style.opacity = '1';
+        clearTimeout(this.hintTimer);
+        this.hintTimer = setTimeout(() => this.hideHint(), 2500);
+      }
+      return;
+    }
     if (SVGApp.state.activeResize) return;
 
     SVGApp.state.activeDrag = target;
@@ -56,6 +65,15 @@ SVGApp.interaction = {
    * بدء تكبير/تصغير الشكل بواسطة مقابض الزوايا الأربع
    */
   initResizeShape(e) {
+    if (SVGApp.state.isDesignLocked) {
+      if (SVGApp.dom.dragHint) {
+        SVGApp.dom.dragHint.textContent = '🔒 التصميم مقفل حالياً. افتح القفل من الأعلى للسماح بالتحريك والتحجيم.';
+        SVGApp.dom.dragHint.style.opacity = '1';
+        clearTimeout(this.hintTimer);
+        this.hintTimer = setTimeout(() => this.hideHint(), 2500);
+      }
+      return;
+    }
     e.stopPropagation();
     e.preventDefault();
 
@@ -140,9 +158,60 @@ SVGApp.interaction = {
   },
 
   /**
+   * تبديل حالة القفل (مقفل / مفتوح)
+   */
+  toggleDesignLock() {
+    SVGApp.state.isDesignLocked = !SVGApp.state.isDesignLocked;
+    this.updateLockUI();
+  },
+
+  updateLockUI() {
+    const isLocked = SVGApp.state.isDesignLocked;
+    const btn = SVGApp.dom.lockToggleBtn;
+    if (btn) {
+      if (isLocked) {
+        btn.classList.add('locked');
+        btn.classList.remove('unlocked');
+        btn.innerHTML = '🔒 مقفل';
+        btn.title = 'التصميم مقفل لمنع التحريك بالخطأ (اضغط لفتح التحريك اليدوي)';
+      } else {
+        btn.classList.remove('locked');
+        btn.classList.add('unlocked');
+        btn.innerHTML = '🔓 مفتوح للتحريك';
+        btn.title = 'التصميم مفتوح (يمكنك سحب وتحريك الكلمة والشكل بالماوس أو اللمس)';
+      }
+    }
+
+    if (SVGApp.dom.dragHint) {
+      if (isLocked) {
+        SVGApp.dom.dragHint.textContent = '🔒 التصميم مقفل • افتح القفل بالأعلى للتحريك باللمس';
+      } else {
+        SVGApp.dom.dragHint.textContent = '🔓 مفتوح • المس الكلمة أو الشكل للتحريك بحرية';
+      }
+      SVGApp.dom.dragHint.style.opacity = '1';
+      clearTimeout(this.hintTimer);
+      this.hintTimer = setTimeout(() => this.hideHint(), 4000);
+    }
+
+    if (SVGApp.dom.masterDesignGroup) {
+      if (isLocked) {
+        document.body.classList.add('design-locked');
+      } else {
+        document.body.classList.remove('design-locked');
+      }
+    }
+  },
+
+  /**
    * ربط أحداث الماوس واللمس للعناصر
    */
   bindEvents() {
+    // زر القفل
+    if (SVGApp.dom.lockToggleBtn) {
+      SVGApp.dom.lockToggleBtn.addEventListener('click', () => this.toggleDesignLock());
+    }
+    this.updateLockUI();
+
     // سحب الكلمة
     SVGApp.dom.textGroup.addEventListener('mousedown', (e) => {
       e.stopPropagation();

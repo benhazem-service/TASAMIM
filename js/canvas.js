@@ -50,7 +50,9 @@ SVGApp.canvas = {
     const canvas = this._traceCanvas;
     const ctx = this._traceCtx;
     const fontSize = 220;
-    const fontStr = '700 ' + fontSize + 'px ' + fontFamily;
+    // نستخدم نمط normal لأن بعض الخطوط المزخرفة (مثل Campana Script أو Cameliya) لا تحتوي على نسخة Bold وإذا فُرض 700 قد يرفضها المتصفح
+    const isBold = fontFamily.includes('Bold');
+    const fontStr = (isBold ? 'bold ' : 'normal ') + fontSize + 'px ' + fontFamily;
 
     ctx.font = fontStr;
     const measured = ctx.measureText(cleanTxt);
