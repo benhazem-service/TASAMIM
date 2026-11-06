@@ -153,9 +153,9 @@ SVGApp.orders = {
   },
 
   /**
-   * إجراء الزبون: توليد الملف المشفر وفتح الواتساب لإرساله للمدير
+   * إجراء الزبون: إرسال الطلب عبر الواتساب مع الملف المشفر
    */
-  handleCustomerSendWhatsApp() {
+  async handleCustomerSendWhatsApp() {
     const rawPhone = SVGApp.dom.customerPhoneInput ? SVGApp.dom.customerPhoneInput.value : '';
     const cleanPhone = this.cleanPhoneNumber(rawPhone);
 
@@ -203,10 +203,41 @@ SVGApp.orders = {
     };
 
     const encryptedText = this.encryptPayload(payload);
+    const filename = orderId + '.svge';
+
+    // 1. تجربة Web Share API (خاصة بالهواتف لمشاركة الملف مباشرة داخل تطبيق WhatsApp دون الحاجة لفتحه يدوياً)
+    let sharedDirectly = false;
+    if (navigator.canShare && window.File) {
+      try {
+        const fileObj = new File([encryptedText], filename, { type: 'application/octet-stream' });
+        const shareData = {
+          files: [fileObj],
+          title: 'طلب تصميم: ' + orderId,
+          text: 'طلب تصميم فيكتور جديد:\n📄 رقم الملف: ' + orderId + '\n📱 هاتف: ' + cleanPhone + '\n📏 القياس: ' + SVGApp.state.manualWidth_cm.toFixed(1) + ' × ' + SVGApp.state.manualHeight_cm.toFixed(1) + ' cm'
+        };
+
+        if (navigator.canShare(shareData)) {
+          await navigator.share(shareData);
+          sharedDirectly = true;
+          if (SVGApp.dom.customerStatusMsg) {
+            SVGApp.dom.customerStatusMsg.innerHTML = '✓ تم إرسال ومشاركة الملف المشفر بنجاح عبر الواتساب!';
+            SVGApp.dom.customerStatusMsg.style.color = '#15803d';
+            SVGApp.dom.customerStatusMsg.style.display = 'block';
+          }
+          return;
+        }
+      } catch (shareErr) {
+        // إذا ألغى المستخدم المشاركة أو لم تكتمل ننتقل للتحميل والرابط التلقائي
+      }
+    }
+
+    // 2. الطريقة القياسية (تنزيل الملف على الهاتف + فتح محادثة الواتساب جاهزة)
     const savedFilename = this.downloadEncryptedFile(encryptedText, orderId);
 
     if (SVGApp.dom.customerStatusMsg) {
-      SVGApp.dom.customerStatusMsg.innerHTML = '✓ تم تجهيز وتنزيل الملف المشفر: <b>' + savedFilename + '</b><br>قم بإرفاق هذا الملف في محادثة الواتساب المفتوحة الآن.';
+      SVGApp.dom.customerStatusMsg.innerHTML =
+        '⬇ <b>تم حفظ الملف في هاتفك: ' + savedFilename + '</b><br>' +
+        '📲 اضغط على زر المرفقات 📎 في محادثة الواتساب وأرسل الملف المحفوظ للمدير.';
       SVGApp.dom.customerStatusMsg.style.color = '#15803d';
       SVGApp.dom.customerStatusMsg.style.display = 'block';
     }
@@ -218,7 +249,7 @@ SVGApp.orders = {
       '📄 رقم الملف: ' + orderId,
       '📱 رقم الهاتف: ' + cleanPhone,
       '📏 القياس المطلوب: ' + SVGApp.state.manualWidth_cm.toFixed(1) + ' × ' + SVGApp.state.manualHeight_cm.toFixed(1) + ' cm',
-      '📎 (مرفق لكم الملف المشفر: ' + savedFilename + ')'
+      '📎 (يرجى إرفاق الملف المشفر المحفوظ: ' + savedFilename + ')'
     ];
     const encodedMsg = encodeURIComponent(msgLines.join('\n'));
     const waUrl = adminWhatsApp
