@@ -198,7 +198,7 @@
 
         <div class="control-group" style="margin-top:4px;border-top:1px dashed #bfdbfe;padding-top:6px;">
           <label style="font-size:.73rem;color:#1e3a8a;">📱 رقم واتساب المطبعة (لاستقبال الطلبات تلقائياً):</label>
-          <input type="tel" id="adminWhatsAppInput" placeholder="مثال: 212662065072" inputmode="tel" style="direction:ltr;text-align:left;font-size:.8rem;padding:5px 8px;">
+          <input type="tel" id="adminWhatsAppInput" value="0771018442" placeholder="مثال: 0771018442" inputmode="tel" style="direction:ltr;text-align:left;font-size:.8rem;padding:5px 8px;">
         </div>
       </div>
 
@@ -227,32 +227,45 @@
 
       <!-- قسم الأشكال والزخارف (Vector) -->
       <div class="shapes-section">
-        <label>الأشكال والزخارف (Vector):</label>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <label style="margin:0;">الأشكال والزخارف (انقر لإضافة شكل):</label>
+          <span class="shapes-count-badge" id="shapesCountBadge" style="font-size:.72rem;background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:12px;font-weight:800;">شكل واحد (1)</span>
+        </div>
         <div class="shapes-grid" id="shapesGrid">
-          <button class="shape-btn" data-shape="none" title="بدون شكل">✕</button>
-          <button class="shape-btn active" data-shape="crescent" title="هلال ونجمة">
+          <button class="shape-btn" data-shape="none" title="مسح جميع الأشكال">✕</button>
+          <button class="shape-btn active" data-shape="crescent" title="إضافة هلال ونجمة">
             <svg viewBox="0 0 100 100"><path d="M50 10 A40 40 0 1 0 88 68 A32 32 0 1 1 50 10 Z"/><polygon points="68,22 72,32 82,32 74,38 77,48 68,42 60,48 63,38 55,32 65,32"/></svg>
           </button>
-          <button class="shape-btn" data-shape="kaaba" title="الكعبة المشرفة">
+          <button class="shape-btn" data-shape="kaaba" title="إضافة الكعبة المشرفة">
             <svg viewBox="0 0 100 100"><polygon points="50,15 88,32 50,48 12,32"/><polygon points="12,35 48,51 48,92 12,74"/><polygon points="52,51 88,35 88,74 52,92"/><polygon points="12,41 48,57 48,62 12,46" fill="#cbd5e1"/><polygon points="52,57 88,41 88,46 52,62" fill="#cbd5e1"/><rect x="62" y="65" width="8" height="15" fill="#cbd5e1"/></svg>
           </button>
-          <button class="shape-btn" data-shape="star8" title="نجمة إسلامية">
+          <button class="shape-btn" data-shape="star8" title="إضافة نجمة إسلامية">
             <svg viewBox="0 0 100 100"><polygon points="50,5 63,22 85,15 78,37 95,50 78,63 85,85 63,78 50,95 37,78 15,85 22,63 5,50 22,37 15,15 37,22"/></svg>
           </button>
-          <button class="shape-btn" data-shape="heart" title="قلب">
+          <button class="shape-btn" data-shape="heart" title="إضافة قلب">
             <svg viewBox="0 0 100 100"><path d="M50,88 C20,65 5,45 5,28 C5,13 17,5 30,5 C39,5 46,10 50,18 C54,10 61,5 70,5 C83,5 95,13 95,28 C95,45 80,65 50,88 Z"/></svg>
           </button>
-          <button class="shape-btn" data-shape="star" title="نجمة خماسية">
+          <button class="shape-btn" data-shape="star" title="إضافة نجمة خماسية">
             <svg viewBox="0 0 100 100"><polygon points="50,5 64,36 98,36 70,57 81,91 50,70 19,91 30,57 2,36 36,36"/></svg>
           </button>
-          <button class="shape-btn" data-shape="crown" title="تاج">
+          <button class="shape-btn" data-shape="crown" title="إضافة تاج">
             <svg viewBox="0 0 100 100"><polygon points="10,75 90,75 80,35 60,55 50,25 40,55 20,35"/><circle cx="50" cy="22" r="5"/><circle cx="20" cy="32" r="4"/><circle cx="80" cy="32" r="4"/></svg>
           </button>
-          <button class="shape-btn" data-shape="diamond" title="ماسة">
+          <button class="shape-btn" data-shape="diamond" title="إضافة ماسة">
             <svg viewBox="0 0 100 100"><polygon points="50,5 95,40 50,95 5,40"/></svg>
           </button>
-          <button class="shape-btn" data-shape="flower" title="زهرة">
+          <button class="shape-btn" data-shape="flower" title="إضافة زهرة">
             <svg viewBox="0 0 100 100"><circle cx="50" cy="20" r="12"/><circle cx="80" cy="50" r="12"/><circle cx="50" cy="80" r="12"/><circle cx="20" cy="50" r="12"/><circle cx="50" cy="50" r="15"/></svg>
+          </button>
+        </div>
+
+        <!-- أزرار تكرار وحذف الشكل المحدد -->
+        <div style="display:flex;gap:6px;margin-top:6px;">
+          <button type="button" class="dim-reset-btn" id="btnDuplicateShape" style="flex:1;margin:0;padding:6px 8px;background:#ecfdf5;border-color:#10b981;color:#047857;font-weight:800;font-size:.76rem;">
+            ➕ تكرار الشكل المحدد
+          </button>
+          <button type="button" class="dim-reset-btn" id="btnDeleteShape" style="flex:1;margin:0;padding:6px 8px;background:#fef2f2;border-color:#f87171;color:#b91c1c;font-weight:800;font-size:.76rem;">
+            🗑️ حذف الشكل المحدد
           </button>
         </div>
 

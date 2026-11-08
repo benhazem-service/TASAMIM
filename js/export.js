@@ -31,7 +31,8 @@ SVGApp.exporter = {
     const pos = SVGApp.dom.shapePosition.value;
 
     const showText = (pos !== 'only' && txt.length > 0);
-    const showShape = (SVGApp.state.activeShapeKey !== 'none');
+    const shapesList = SVGApp.state.shapes || [];
+    const showShapes = (shapesList.length > 0);
 
     // 1. تصدير الكلمة كمسار فيكتور (<path>) مطابق 100% للمعاينة
     let textStr = '';
@@ -55,16 +56,18 @@ SVGApp.exporter = {
       }
     }
 
-    // 2. تصدير الشكل كمسار فيكتور
+    // 2. تصدير جميع الأشكال المضافة كمسارات فيكتور
     let shapeStr = '';
-    const raw = SVGApp.shapes.getShapeContent(SVGApp.state.activeShapeKey);
-    if (showShape && raw) {
-      const gTemp = SVGApp.dom.shapeContainer.querySelector('g');
-      const transformAttr = gTemp ? (gTemp.getAttribute('transform') || '') : '';
-      shapeStr = '    <g id="shapeGroup" transform="translate(' + SVGApp.state.shapeRelX.toFixed(2) + ',' + SVGApp.state.shapeRelY.toFixed(2) + ')">\n' +
-                 '      <g transform="' + transformAttr + '" fill="#000000">\n        ' +
-                 raw +
-                 '\n      </g>\n    </g>\n';
+    if (showShapes) {
+      shapesList.forEach((sh, idx) => {
+        const raw = SVGApp.shapes.getShapeContent(sh.key);
+        if (!raw) return;
+        const transformAttr = sh.innerTransform || '';
+        shapeStr += '    <g id="shapeGroup_' + (idx + 1) + '" transform="translate(' + (sh.relX || 0).toFixed(2) + ',' + (sh.relY || 0).toFixed(2) + ')">\n' +
+                    '      <g transform="' + transformAttr + '" fill="#000000">\n        ' +
+                    raw +
+                    '\n      </g>\n    </g>\n';
+      });
     }
 
     const masterTransform = SVGApp.dom.masterDesignGroup.getAttribute('transform') || '';

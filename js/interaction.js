@@ -20,9 +20,16 @@ SVGApp.interaction = {
   },
 
   /**
-   * بدء تحريك عنصر (نص أو شكل)
+   * بدء تحريك عنصر (نص أو شكل من الأشكال المضافة)
    */
   initDrag(target, e) {
+    // عند النقر على شكل، نقوم بتحديده أولاً حتى لو كان التصميم مقفلاً (ليتمكن المستخدم من تكراره أو حذفه أو تحجيمه بالشريط)
+    if (target && typeof target === 'object' && target.type === 'shape' && target.id) {
+      if (SVGApp.shapes && SVGApp.shapes.selectShapeById) {
+        SVGApp.shapes.selectShapeById(target.id, true);
+      }
+    }
+
     if (SVGApp.state.isDesignLocked) {
       if (SVGApp.dom.dragHint) {
         SVGApp.dom.dragHint.textContent = '🔒 التصميم مقفل حالياً. افتح القفل من الأعلى للسماح بالتحريك اليدوي.';
@@ -54,17 +61,26 @@ SVGApp.interaction = {
 
     if (target === 'text') {
       SVGApp.state.dragStartPos = { x: SVGApp.state.textRelX, y: SVGApp.state.textRelY };
-    } else {
-      SVGApp.state.dragStartPos = { x: SVGApp.state.shapeRelX, y: SVGApp.state.shapeRelY };
+    } else if (target && target.type === 'shape') {
+      const sh = (SVGApp.state.shapes || []).find(s => s.id === target.id);
+      if (sh) {
+        SVGApp.state.dragStartPos = { x: sh.relX || 0, y: sh.relY || 0 };
+      } else {
+        SVGApp.state.dragStartPos = { x: 0, y: 0 };
+      }
     }
 
     this.hideHint();
   },
 
   /**
-   * بدء تكبير/تصغير الشكل بواسطة مقابض الزوايا الأربع
+   * بدء تكبير/تصغير الشكل المحدد بواسطة مقابض الزوايا الأربع
    */
-  initResizeShape(e) {
+  initResizeShape(e, shapeId) {
+    if (shapeId && SVGApp.shapes && SVGApp.shapes.selectShapeById) {
+      SVGApp.shapes.selectShapeById(shapeId, false);
+    }
+
     if (SVGApp.state.isDesignLocked) {
       if (SVGApp.dom.dragHint) {
         SVGApp.dom.dragHint.textContent = '🔒 التصميم مقفل حالياً. افتح القفل من الأعلى للسماح بالتحريك والتحجيم.';
@@ -77,21 +93,31 @@ SVGApp.interaction = {
     e.stopPropagation();
     e.preventDefault();
 
+    const sel = (SVGApp.shapes && SVGApp.shapes.getSelectedShape) ? SVGApp.shapes.getSelectedShape() : null;
+    if (!sel) return;
+
     SVGApp.state.activeResize = true;
     document.body.classList.add('is-resizing');
 
     const src = e.touches ? e.touches[0] : e;
     SVGApp.state.resizeStartClient = { x: src.clientX, y: src.clientY };
-    SVGApp.state.resizeStartScale = SVGApp.state.shapeScaleRatio || 1.0;
+    SVGApp.state.resizeStartScale = sel.scaleRatio || 1.0;
 
-    // حساب مركز الشكل على الشاشة عند لحظة البدء لضمان تحجيم سلس من جميع الزوايا الأربع
+    // حساب مركز الشكل المحدد على الشاشة عند لحظة البدء لضمان تحجيم سلس من جميع الزوايا الأربع
     try {
-      const rect = SVGApp.dom.shapeSelectionBox.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-      const startDist = Math.max(Math.hypot(src.clientX - cx, src.clientY - cy), 15);
-      SVGApp.state.resizeStartCenter = { x: cx, y: cy };
-      SVGApp.state.resizeStartDist = startDist;
+      const groupEl = SVGApp.dom.shapeGroup.querySelector('.shape-item-group[data-shape-id="' + sel.id + '"]');
+      const boxEl = groupEl ? groupEl.querySelector('.shape-selection-box') : null;
+      const rect = boxEl ? boxEl.getBoundingClientRect() : null;
+      if (rect && rect.width > 0) {
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const startDist = Math.max(Math.hypot(src.clientX - cx, src.clientY - cy), 15);
+        SVGApp.state.resizeStartCenter = { x: cx, y: cy };
+        SVGApp.state.resizeStartDist = startDist;
+      } else {
+        SVGApp.state.resizeStartCenter = { x: src.clientX - 50, y: src.clientY - 50 };
+        SVGApp.state.resizeStartDist = 70;
+      }
     } catch (err) {
       SVGApp.state.resizeStartCenter = { x: src.clientX - 50, y: src.clientY - 50 };
       SVGApp.state.resizeStartDist = 70;
@@ -119,7 +145,7 @@ SVGApp.interaction = {
       return;
     }
 
-    // 2. حالة تحريك الكلمة أو الشكل بحرية
+    // 2. حالة تحريك الكلمة أو الشكل المحدد بحرية
     if (SVGApp.state.activeDrag) {
       if (e.touches && e.cancelable) e.preventDefault();
 
@@ -132,9 +158,14 @@ SVGApp.interaction = {
       if (SVGApp.state.activeDrag === 'text') {
         SVGApp.state.textRelX = SVGApp.state.dragStartPos.x + dx;
         SVGApp.state.textRelY = SVGApp.state.dragStartPos.y + dy;
-      } else if (SVGApp.state.activeDrag === 'shape') {
-        SVGApp.state.shapeRelX = SVGApp.state.dragStartPos.x + dx;
-        SVGApp.state.shapeRelY = SVGApp.state.dragStartPos.y + dy;
+      } else if (SVGApp.state.activeDrag && SVGApp.state.activeDrag.type === 'shape') {
+        const sh = (SVGApp.state.shapes || []).find(s => s.id === SVGApp.state.activeDrag.id);
+        if (sh) {
+          sh.relX = SVGApp.state.dragStartPos.x + dx;
+          sh.relY = SVGApp.state.dragStartPos.y + dy;
+          SVGApp.state.shapeRelX = sh.relX;
+          SVGApp.state.shapeRelY = sh.relY;
+        }
       }
 
       SVGApp.canvas.applyLayoutAndManualDimensions();
@@ -178,7 +209,7 @@ SVGApp.interaction = {
         btn.classList.remove('locked');
         btn.classList.add('unlocked');
         btn.innerHTML = '🔓 مفتوح للتحريك';
-        btn.title = 'التصميم مفتوح (يمكنك سحب وتحريك الكلمة والشكل بالماوس أو اللمس)';
+        btn.title = 'التصميم مفتوح (يمكنك سحب وتحريك الكلمة والأشكال بالماوس أو اللمس)';
       }
     }
 
@@ -186,7 +217,7 @@ SVGApp.interaction = {
       if (isLocked) {
         SVGApp.dom.dragHint.textContent = '🔒 التصميم مقفل • افتح القفل بالأعلى للتحريك باللمس';
       } else {
-        SVGApp.dom.dragHint.textContent = '🔓 مفتوح • المس الكلمة أو الشكل للتحريك بحرية';
+        SVGApp.dom.dragHint.textContent = '🔓 مفتوح • المس الكلمة أو أي شكل للتحريك بحرية';
       }
       SVGApp.dom.dragHint.style.opacity = '1';
       clearTimeout(this.hintTimer);
@@ -223,31 +254,33 @@ SVGApp.interaction = {
       this.initDrag('text', e);
     }, { passive: false });
 
-    // سحب الشكل
+    // سحب أو تحجيم أي شكل من الأشكال المضافة (تفويض الأحداث على shapeGroup)
     SVGApp.dom.shapeGroup.addEventListener('mousedown', (e) => {
-      if (e.target.classList.contains('resize-handle')) return;
-      e.stopPropagation();
-      this.initDrag('shape', e);
-      e.preventDefault();
+      const handleEl = e.target.closest('.resize-handle');
+      if (handleEl) {
+        this.initResizeShape(e, handleEl.getAttribute('data-shape-id'));
+        return;
+      }
+      const itemGroup = e.target.closest('.shape-item-group');
+      if (itemGroup) {
+        e.stopPropagation();
+        this.initDrag({ type: 'shape', id: itemGroup.getAttribute('data-shape-id') }, e);
+        e.preventDefault();
+      }
     });
-    SVGApp.dom.shapeGroup.addEventListener('touchstart', (e) => {
-      if (e.target.classList.contains('resize-handle')) return;
-      e.stopPropagation();
-      this.initDrag('shape', e);
-    }, { passive: false });
 
-    // مقابض تكبير وتصغير الشكل الأربع
-    const handles = [
-      SVGApp.dom.handleTL,
-      SVGApp.dom.handleTR,
-      SVGApp.dom.handleBR,
-      SVGApp.dom.handleBL
-    ];
-    handles.forEach(h => {
-      if (!h) return;
-      h.addEventListener('mousedown', (e) => this.initResizeShape(e));
-      h.addEventListener('touchstart', (e) => this.initResizeShape(e), { passive: false });
-    });
+    SVGApp.dom.shapeGroup.addEventListener('touchstart', (e) => {
+      const handleEl = e.target.closest('.resize-handle');
+      if (handleEl) {
+        this.initResizeShape(e, handleEl.getAttribute('data-shape-id'));
+        return;
+      }
+      const itemGroup = e.target.closest('.shape-item-group');
+      if (itemGroup) {
+        e.stopPropagation();
+        this.initDrag({ type: 'shape', id: itemGroup.getAttribute('data-shape-id') }, e);
+      }
+    }, { passive: false });
 
     // أحداث الحركة العامة على النافذة
     window.addEventListener('mousemove', (e) => this.handlePointerMove(e));

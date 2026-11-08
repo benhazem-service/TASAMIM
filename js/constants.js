@@ -9,8 +9,9 @@ window.SVGApp = window.SVGApp || {};
 // معامل التحويل بين البيكسل والسنتيمتر (96 DPI / 2.54 = ~37.8 px per cm)
 SVGApp.PX_PER_CM = 37.79527559;
 
-// رقم واتساب المطبعة الثابت والمحدث تلقائياً
-SVGApp.DEFAULT_PRINT_SHOP_WHATSAPP = '212662065072';
+// رقم واتساب المطبعة الثابت والمحدث تلقائياً (0771018442 -> 212771018442)
+SVGApp.DEFAULT_PRINT_SHOP_WHATSAPP = '0771018442';
+SVGApp.DEFAULT_PRINT_SHOP_WA_INTL = '212771018442';
 SVGApp.BUILT_IN_SHAPES = {
   none: '',
   crescent: '<path d="M50 10 A40 40 0 1 0 88 68 A32 32 0 1 1 50 10 Z"/><polygon points="68,22 72,32 82,32 74,38 77,48 68,42 60,48 63,38 55,32 65,32"/>',

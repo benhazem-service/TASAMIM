@@ -281,6 +281,8 @@ SVGApp.canvas = {
     return pathEl;
   },
 
+  _rawShapeBBoxCache: {},
+
   /**
    * قراءة الحدود الهندسية الدقيقة للكلمة
    */
@@ -289,37 +291,44 @@ SVGApp.canvas = {
   },
 
   /**
-   * قراءة الحدود الهندسية الدقيقة للشكل
+   * قراءة الحدود الهندسية الدقيقة للشكل المحدد (أو شكل ممرر)
    */
-  getShapeBBox() {
+  getShapeBBox(shapeObj) {
+    const target = shapeObj || (SVGApp.shapes && SVGApp.shapes.getSelectedShape ? SVGApp.shapes.getSelectedShape() : null);
+    if (target && target.localBox) {
+      return target.localBox;
+    }
     return SVGApp.state.shapeLocalBox || { x: -50, y: -50, width: 100, height: 100 };
   },
 
   /**
-   * تغيير وتحديث مقياس تكبير/تصغير الشكل داخل المشروع
-   * مع الحفاظ على المسافة الفاصلة عن الكلمة وبقاء التصميم داخل الإطار
+   * تغيير وتحديث مقياس تكبير/تصغير الشكل المحدد داخل المشروع
    */
   setShapeScale(scaleRatio, skipSlider = false) {
+    const sel = SVGApp.shapes && SVGApp.shapes.getSelectedShape ? SVGApp.shapes.getSelectedShape() : null;
     const clamped = Math.max(0.15, Math.min(scaleRatio, 4.0));
     const showText = (SVGApp.dom.shapePosition.value !== 'only' && (SVGApp.dom.textInput.value || '').trim().length > 0);
-    const showShape = (SVGApp.state.activeShapeKey !== 'none');
+    const shapesList = SVGApp.state.shapes || [];
 
-    // حفظ الحافة المواجهة للكلمة قبل تغيير حجم الشكل لمنع التداخل
+    // حفظ الحافة المواجهة للكلمة قبل تغيير حجم الشكل لمنع التداخل (عندما يكون هناك شكل واحد)
     let anchorEdge = null;
     const pos = SVGApp.dom.shapePosition.value;
-    if (showText && showShape) {
-      const oldSb = this.getShapeBBox();
+    if (showText && sel && shapesList.length === 1) {
+      const oldSb = this.getShapeBBox(sel);
       if (pos === 'right') {
-        anchorEdge = SVGApp.state.shapeRelX + oldSb.x;
+        anchorEdge = sel.relX + oldSb.x;
       } else if (pos === 'left') {
-        anchorEdge = SVGApp.state.shapeRelX + oldSb.x + oldSb.width;
+        anchorEdge = sel.relX + oldSb.x + oldSb.width;
       } else if (pos === 'top') {
-        anchorEdge = SVGApp.state.shapeRelY + oldSb.y + oldSb.height;
+        anchorEdge = sel.relY + oldSb.y + oldSb.height;
       } else if (pos === 'bottom') {
-        anchorEdge = SVGApp.state.shapeRelY + oldSb.y;
+        anchorEdge = sel.relY + oldSb.y;
       }
     }
 
+    if (sel) {
+      sel.scaleRatio = clamped;
+    }
     SVGApp.state.shapeScaleRatio = clamped;
 
     const percent = Math.round(clamped * 100);
@@ -332,31 +341,34 @@ SVGApp.canvas = {
 
     this.updateTextAndShapeElements();
 
-    // استعادة الحافة المواجهة للكلمة بحيث يتمدد الشكل للخارج دون الاصطدام بالكلمة
-    if (anchorEdge !== null && showText && showShape) {
-      const newSb = this.getShapeBBox();
+    // استعادة الحافة المواجهة للكلمة عند وجود شكل واحد بحيث يتمدد للخارج دون الاصطدام بالكلمة
+    if (anchorEdge !== null && showText && sel && shapesList.length === 1) {
+      const newSb = this.getShapeBBox(sel);
       if (pos === 'right') {
-        SVGApp.state.shapeRelX = anchorEdge - newSb.x;
+        sel.relX = anchorEdge - newSb.x;
       } else if (pos === 'left') {
-        SVGApp.state.shapeRelX = anchorEdge - (newSb.x + newSb.width);
+        sel.relX = anchorEdge - (newSb.x + newSb.width);
       } else if (pos === 'top') {
-        SVGApp.state.shapeRelY = anchorEdge - (newSb.y + newSb.height);
+        sel.relY = anchorEdge - (newSb.y + newSb.height);
       } else if (pos === 'bottom') {
-        SVGApp.state.shapeRelY = anchorEdge - newSb.y;
+        sel.relY = anchorEdge - newSb.y;
       }
+      SVGApp.state.shapeRelX = sel.relX;
+      SVGApp.state.shapeRelY = sel.relY;
     }
 
     this.applyLayoutAndManualDimensions();
   },
 
   /**
-   * تحديث عناصر الكلمة (كمسار فيكتور دقيق) والشكل في شجرة SVG
+   * تحديث عناصر الكلمة (كمسار فيكتور دقيق) وجميع الأشكال المضافة في شجرة SVG
    */
   updateTextAndShapeElements() {
     const txt = (SVGApp.dom.textInput.value || '').trim();
     const pos = SVGApp.dom.shapePosition.value;
     const showText = (pos !== 'only' && txt.length > 0);
-    const showShape = (SVGApp.state.activeShapeKey !== 'none');
+    const shapesList = SVGApp.state.shapes || [];
+    const showShapes = (shapesList.length > 0);
 
     // 1. تحديث الكلمة كمسار فيكتور (<path>) لضمان بقائها داخل الإطار وظهورها عند التصدير
     const textPathEl = this.getOrCreateTextPathEl();
@@ -384,39 +396,94 @@ SVGApp.canvas = {
       SVGApp.state.textVectorPath = '';
     }
 
-    // 2. تحديث الشكل وتطبيق نسبة التحجيم (shapeScaleRatio)
-    SVGApp.dom.shapeContainer.innerHTML = '';
-    if (showShape) {
+    // 2. تحديث جميع الأشكال المضافة في التصميم داخل shapeGroup
+    SVGApp.dom.shapeGroup.innerHTML = '';
+    if (showShapes) {
       SVGApp.dom.shapeGroup.style.display = '';
-      const raw = SVGApp.shapes.getShapeContent(SVGApp.state.activeShapeKey);
-      if (raw) {
-        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        g.innerHTML = raw;
-        SVGApp.dom.shapeContainer.appendChild(g);
+      SVGApp.dom.shapeGroup.setAttribute('transform', 'translate(0,0)');
 
-        let rawBBox = { x: 0, y: 0, width: 100, height: 100 };
-        try {
-          const b = g.getBBox();
-          if (b.width > 0 && b.height > 0) rawBBox = b;
-        } catch (e) {}
+      shapesList.forEach((sh) => {
+        const raw = SVGApp.shapes.getShapeContent(sh.key);
+        if (!raw) return;
 
+        const itemGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        itemGroup.setAttribute('class', 'interactive-group shape-item-group');
+        itemGroup.setAttribute('data-shape-id', sh.id);
+        itemGroup.setAttribute('transform', 'translate(' + (sh.relX || 0).toFixed(2) + ',' + (sh.relY || 0).toFixed(2) + ')');
+
+        const hitArea = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        hitArea.setAttribute('class', 'shape-hit-area');
+        hitArea.setAttribute('fill', 'transparent');
+        hitArea.setAttribute('pointer-events', 'all');
+        itemGroup.appendChild(hitArea);
+
+        const selBox = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        selBox.setAttribute('class', 'drag-selection-box shape-selection-box');
+        selBox.setAttribute('fill', 'none');
+        selBox.setAttribute('stroke', '#10b981');
+        selBox.setAttribute('stroke-width', '1.2');
+        selBox.setAttribute('rx', '4');
+        itemGroup.appendChild(selBox);
+
+        const labelBadge = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        labelBadge.setAttribute('class', 'drag-label-badge shape-label-badge');
+        labelBadge.setAttribute('fill', '#10b981');
+        itemGroup.appendChild(labelBadge);
+
+        const contentContainer = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        contentContainer.setAttribute('class', 'shape-item-content');
+        contentContainer.setAttribute('fill', '#1e293b');
+        const innerG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        innerG.innerHTML = raw;
+        contentContainer.appendChild(innerG);
+        itemGroup.appendChild(contentContainer);
+
+        ['TL', 'TR', 'BR', 'BL'].forEach(corner => {
+          const handle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          handle.setAttribute('class', 'resize-handle handle-' + corner);
+          handle.setAttribute('data-shape-id', sh.id);
+          handle.setAttribute('data-corner', corner);
+          handle.setAttribute('r', '6');
+          itemGroup.appendChild(handle);
+        });
+
+        SVGApp.dom.shapeGroup.appendChild(itemGroup);
+
+        let rawBBox = this._rawShapeBBoxCache[sh.key];
+        if (!rawBBox) {
+          rawBBox = { x: 0, y: 0, width: 100, height: 100 };
+          try {
+            const b = innerG.getBBox();
+            if (b.width > 0 && b.height > 0) {
+              rawBBox = { x: b.x, y: b.y, width: b.width, height: b.height };
+              this._rawShapeBBoxCache[sh.key] = rawBBox;
+            }
+          } catch (e) {}
+        }
+
+        const scaleRatio = sh.scaleRatio || 1.0;
         const maxDim = Math.max(rawBBox.width, rawBBox.height, 1);
-        const targetPx = 100 * SVGApp.state.shapeScaleRatio;
+        const targetPx = 100 * scaleRatio;
         const scale = targetPx / maxDim;
         const cx = rawBBox.x + rawBBox.width / 2;
         const cy = rawBBox.y + rawBBox.height / 2;
 
-        g.setAttribute('transform', 'scale(' + scale.toFixed(4) + ') translate(' + (-cx).toFixed(2) + ',' + (-cy).toFixed(2) + ')');
-        SVGApp.dom.shapeContainer.setAttribute('fill', '#1e293b');
+        const transformStr = 'scale(' + scale.toFixed(4) + ') translate(' + (-cx).toFixed(2) + ',' + (-cy).toFixed(2) + ')';
+        innerG.setAttribute('transform', transformStr);
+        sh.innerTransform = transformStr;
 
         const sw = rawBBox.width * scale;
-        const sh = rawBBox.height * scale;
-        SVGApp.state.shapeLocalBox = {
+        const shHeight = rawBBox.height * scale;
+        sh.localBox = {
           x: -sw / 2,
-          y: -sh / 2,
+          y: -shHeight / 2,
           width: sw,
-          height: sh
+          height: shHeight
         };
+      });
+
+      if (SVGApp.shapes && SVGApp.shapes.syncStateAndUI) {
+        SVGApp.shapes.syncStateAndUI();
       }
     } else {
       SVGApp.dom.shapeGroup.style.display = 'none';
@@ -430,32 +497,36 @@ SVGApp.canvas = {
     const pos = SVGApp.dom.shapePosition.value;
     const txt = (SVGApp.dom.textInput.value || '').trim();
     const showText = (pos !== 'only' && txt.length > 0);
-    const showShape = (SVGApp.state.activeShapeKey !== 'none');
+    const shapesList = SVGApp.state.shapes || [];
+    const showSingleShape = (shapesList.length === 1);
 
-    // حفظ المسافة الفاصلة بين الكلمة والشكل قبل تحديث النص
+    // حفظ المسافة الفاصلة بين الكلمة والشكل قبل تحديث النص (في حالة شكل واحد)
     let prevGap = null;
-    if (showText && showShape && SVGApp.dom.textGroup.style.display !== 'none' && SVGApp.dom.shapeGroup.style.display !== 'none') {
+    if (showText && showSingleShape && SVGApp.dom.textGroup.style.display !== 'none') {
+      const sh0 = shapesList[0];
       const oldTb = this.getTextBBox();
-      const oldSb = this.getShapeBBox();
+      const oldSb = this.getShapeBBox(sh0);
       if (pos === 'right') {
-        prevGap = (SVGApp.state.shapeRelX + oldSb.x) - (SVGApp.state.textRelX + oldTb.x + oldTb.width);
+        prevGap = (sh0.relX + oldSb.x) - (SVGApp.state.textRelX + oldTb.x + oldTb.width);
       } else if (pos === 'left') {
-        prevGap = (SVGApp.state.textRelX + oldTb.x) - (SVGApp.state.shapeRelX + oldSb.x + oldSb.width);
+        prevGap = (SVGApp.state.textRelX + oldTb.x) - (sh0.relX + oldSb.x + oldSb.width);
       }
     }
 
     this.updateTextAndShapeElements();
 
-    // الحفاظ على المسافة الفاصلة عند كتابة نص أطول أو تغيير الخط
-    if (prevGap !== null && showText && showShape) {
+    // الحفاظ على المسافة الفاصلة عند كتابة نص أطول أو تغيير الخط (في حالة شكل واحد)
+    if (prevGap !== null && showText && showSingleShape) {
+      const sh0 = shapesList[0];
       const newTb = this.getTextBBox();
-      const newSb = this.getShapeBBox();
+      const newSb = this.getShapeBBox(sh0);
       const safeGap = Math.max(prevGap, 20);
       if (pos === 'right') {
-        SVGApp.state.shapeRelX = (SVGApp.state.textRelX + newTb.x + newTb.width + safeGap) - newSb.x;
+        sh0.relX = (SVGApp.state.textRelX + newTb.x + newTb.width + safeGap) - newSb.x;
       } else if (pos === 'left') {
-        SVGApp.state.shapeRelX = (SVGApp.state.textRelX + newTb.x - safeGap) - (newSb.x + newSb.width);
+        sh0.relX = (SVGApp.state.textRelX + newTb.x - safeGap) - (newSb.x + newSb.width);
       }
+      SVGApp.state.shapeRelX = sh0.relX;
     }
 
     this.applyLayoutAndManualDimensions();
@@ -463,62 +534,66 @@ SVGApp.canvas = {
 
   /**
    * تطبيق التحويلات والقياسات اليدوية الإجمالية
-   * يضمن أن محيط (الكلمة + الشكل) معاً يساوي 100% القيمة المدخلة في القياسات ويبقى داخل الإطار
+   * يضمن أن محيط (الكلمة + جميع الأشكال) معاً يساوي 100% القيمة المدخلة في القياسات ويبقى داخل الإطار
    */
   applyLayoutAndManualDimensions() {
-    // 1. تطبيق الإزاحات النسبية
+    // 1. تطبيق الإزاحات النسبية للكلمة ولكل شكل
     SVGApp.dom.textGroup.setAttribute(
       'transform',
       'translate(' + SVGApp.state.textRelX.toFixed(2) + ',' + SVGApp.state.textRelY.toFixed(2) + ')'
     );
-    SVGApp.dom.shapeGroup.setAttribute(
-      'transform',
-      'translate(' + SVGApp.state.shapeRelX.toFixed(2) + ',' + SVGApp.state.shapeRelY.toFixed(2) + ')'
-    );
+    SVGApp.dom.shapeGroup.setAttribute('transform', 'translate(0,0)');
 
-    // 2. حساب الحدود الفعلية لـ (الكلمة + الشكل)
+    const shapesList = SVGApp.state.shapes || [];
+    const itemGroups = SVGApp.dom.shapeGroup.querySelectorAll('.shape-item-group');
+    itemGroups.forEach(g => {
+      const sid = g.getAttribute('data-shape-id');
+      const sh = shapesList.find(s => s.id === sid);
+      if (sh) {
+        g.setAttribute('transform', 'translate(' + (sh.relX || 0).toFixed(2) + ',' + (sh.relY || 0).toFixed(2) + ')');
+      }
+    });
+
+    // 2. حساب الحدود الفعلية لـ (الكلمة + جميع الأشكال المضافة)
     const showText = (SVGApp.dom.textGroup.style.display !== 'none');
-    const showShape = (SVGApp.dom.shapeGroup.style.display !== 'none');
+    const showShapes = (SVGApp.dom.shapeGroup.style.display !== 'none' && shapesList.length > 0);
 
-    let tb = null;
-    let sb = null;
+    const boxes = [];
 
     if (showText) {
       const b = this.getTextBBox();
-      tb = {
+      boxes.push({
         x: b.x + SVGApp.state.textRelX,
         y: b.y + SVGApp.state.textRelY,
         width: b.width,
         height: b.height
-      };
+      });
     }
 
-    if (showShape) {
-      const b = this.getShapeBBox();
-      sb = {
-        x: b.x + SVGApp.state.shapeRelX,
-        y: b.y + SVGApp.state.shapeRelY,
-        width: b.width,
-        height: b.height
-      };
+    if (showShapes) {
+      shapesList.forEach(sh => {
+        const b = sh.localBox || { x: -50, y: -50, width: 100, height: 100 };
+        boxes.push({
+          x: b.x + (sh.relX || 0),
+          y: b.y + (sh.relY || 0),
+          width: b.width,
+          height: b.height
+        });
+      });
     }
 
     let minX, maxX, minY, maxY;
-    if (tb && sb) {
-      minX = Math.min(tb.x, sb.x);
-      maxX = Math.max(tb.x + tb.width, sb.x + sb.width);
-      minY = Math.min(tb.y, sb.y);
-      maxY = Math.max(tb.y + tb.height, sb.y + sb.height);
-    } else if (tb) {
-      minX = tb.x;
-      maxX = tb.x + tb.width;
-      minY = tb.y;
-      maxY = tb.y + tb.height;
-    } else if (sb) {
-      minX = sb.x;
-      maxX = sb.x + sb.width;
-      minY = sb.y;
-      maxY = sb.y + sb.height;
+    if (boxes.length > 0) {
+      minX = boxes[0].x;
+      maxX = boxes[0].x + boxes[0].width;
+      minY = boxes[0].y;
+      maxY = boxes[0].y + boxes[0].height;
+      for (let i = 1; i < boxes.length; i++) {
+        if (boxes[i].x < minX) minX = boxes[i].x;
+        if (boxes[i].x + boxes[i].width > maxX) maxX = boxes[i].x + boxes[i].width;
+        if (boxes[i].y < minY) minY = boxes[i].y;
+        if (boxes[i].y + boxes[i].height > maxY) maxY = boxes[i].y + boxes[i].height;
+      }
     } else {
       minX = -100;
       maxX = 100;
@@ -531,7 +606,7 @@ SVGApp.canvas = {
     const centerLocalX = (minX + maxX) / 2;
     const centerLocalY = (minY + maxY) / 2;
 
-    // 3. التحجيم المباشر لمطابقة القياس اليدوي: (الكلمة + الشكل = القياس المدخل بالسنتيمتر)
+    // 3. التحجيم المباشر لمطابقة القياس اليدوي: (الكلمة + الأشكال = القياس المدخل بالسنتيمتر)
     const targetWPx = SVGApp.state.manualWidth_cm * SVGApp.PX_PER_CM;
     const targetHPx = SVGApp.state.manualHeight_cm * SVGApp.PX_PER_CM;
 
@@ -553,7 +628,7 @@ SVGApp.canvas = {
   },
 
   /**
-   * تحديث مربعات التحديد والنقر ومقابض تحجيم الشكل مع إظهار قياس كل عنصر بالسنتيمتر
+   * تحديث مربعات التحديد والنقر ومقابض تحجيم كل شكل مع إظهار قياس كل عنصر بالسنتيمتر
    */
   updateHitBoxesAndHandles(scaleX = 1, scaleY = 1) {
     const pxPerCm = SVGApp.PX_PER_CM;
@@ -590,51 +665,73 @@ SVGApp.canvas = {
       SVGApp.dom.textLabelBadge.setAttribute('font-size', (11 / avgScale).toFixed(1));
     }
 
-    // إطار الشكل ومقابض التكبير بالزوايا
+    // أطر الأشكال ومقابض التكبير بالزوايا لكل شكل
     if (SVGApp.dom.shapeGroup.style.display !== 'none') {
-      const b = this.getShapeBBox();
-      const bx = b.x - padX;
-      const by = b.y - padY;
-      const bw = b.width + padX * 2;
-      const bh = b.height + padY * 2;
+      const shapesList = SVGApp.state.shapes || [];
+      const itemGroups = SVGApp.dom.shapeGroup.querySelectorAll('.shape-item-group');
 
-      SVGApp.dom.shapeHitArea.setAttribute('x', bx);
-      SVGApp.dom.shapeHitArea.setAttribute('y', by);
-      SVGApp.dom.shapeHitArea.setAttribute('width', bw);
-      SVGApp.dom.shapeHitArea.setAttribute('height', bh);
+      itemGroups.forEach((g, idx) => {
+        const sid = g.getAttribute('data-shape-id');
+        const sh = shapesList.find(s => s.id === sid);
+        if (!sh) return;
 
-      SVGApp.dom.shapeSelectionBox.setAttribute('x', bx);
-      SVGApp.dom.shapeSelectionBox.setAttribute('y', by);
-      SVGApp.dom.shapeSelectionBox.setAttribute('width', bw);
-      SVGApp.dom.shapeSelectionBox.setAttribute('height', bh);
-      SVGApp.dom.shapeSelectionBox.setAttribute('vector-effect', 'non-scaling-stroke');
+        const isSelected = (sh.id === SVGApp.state.selectedShapeId) || (shapesList.length === 1);
+        const b = sh.localBox || { x: -50, y: -50, width: 100, height: 100 };
+        const bx = b.x - padX;
+        const by = b.y - padY;
+        const bw = b.width + padX * 2;
+        const bh = b.height + padY * 2;
 
-      const shapeW_cm = ((b.width * scaleX) / pxPerCm).toFixed(1);
-      const shapeH_cm = ((b.height * scaleY) / pxPerCm).toFixed(1);
-      SVGApp.dom.shapeLabelBadge.textContent = '⭐ الشكل (' + shapeW_cm + '×' + shapeH_cm + ' cm)';
-      SVGApp.dom.shapeLabelBadge.setAttribute('x', bx + bw / 2);
-      SVGApp.dom.shapeLabelBadge.setAttribute('y', by - 6 / Math.max(scaleY, 0.1));
-      SVGApp.dom.shapeLabelBadge.setAttribute('text-anchor', 'middle');
-      SVGApp.dom.shapeLabelBadge.setAttribute('font-size', (11 / avgScale).toFixed(1));
-
-      [SVGApp.dom.handleTL, SVGApp.dom.handleTR, SVGApp.dom.handleBR, SVGApp.dom.handleBL].forEach(h => {
-        if (h) {
-          h.setAttribute('r', handleRadius.toFixed(1));
-          h.setAttribute('vector-effect', 'non-scaling-stroke');
+        const hitArea = g.querySelector('.shape-hit-area');
+        if (hitArea) {
+          hitArea.setAttribute('x', bx);
+          hitArea.setAttribute('y', by);
+          hitArea.setAttribute('width', bw);
+          hitArea.setAttribute('height', bh);
         }
+
+        const selBox = g.querySelector('.shape-selection-box');
+        if (selBox) {
+          selBox.setAttribute('x', bx);
+          selBox.setAttribute('y', by);
+          selBox.setAttribute('width', bw);
+          selBox.setAttribute('height', bh);
+          selBox.setAttribute('vector-effect', 'non-scaling-stroke');
+          selBox.setAttribute('stroke', isSelected ? '#10b981' : '#94a3b8');
+          selBox.setAttribute('stroke-width', isSelected ? '1.6' : '1.1');
+        }
+
+        const shapeW_cm = ((b.width * scaleX) / pxPerCm).toFixed(1);
+        const shapeH_cm = ((b.height * scaleY) / pxPerCm).toFixed(1);
+        const labelBadge = g.querySelector('.shape-label-badge');
+        if (labelBadge) {
+          const titlePrefix = shapesList.length > 1 ? ('⭐ شكل ' + (idx + 1)) : '⭐ الشكل';
+          labelBadge.textContent = titlePrefix + ' (' + shapeW_cm + '×' + shapeH_cm + ' cm)';
+          labelBadge.setAttribute('x', bx + bw / 2);
+          labelBadge.setAttribute('y', by - 6 / Math.max(scaleY, 0.1));
+          labelBadge.setAttribute('text-anchor', 'middle');
+          labelBadge.setAttribute('font-size', (11 / avgScale).toFixed(1));
+          labelBadge.setAttribute('fill', isSelected ? '#059669' : '#64748b');
+        }
+
+        const hTL = g.querySelector('.handle-TL');
+        const hTR = g.querySelector('.handle-TR');
+        const hBR = g.querySelector('.handle-BR');
+        const hBL = g.querySelector('.handle-BL');
+
+        [hTL, hTR, hBR, hBL].forEach(h => {
+          if (h) {
+            h.setAttribute('r', handleRadius.toFixed(1));
+            h.setAttribute('vector-effect', 'non-scaling-stroke');
+            h.style.display = isSelected ? '' : 'none';
+          }
+        });
+
+        if (hTL) { hTL.setAttribute('cx', bx); hTL.setAttribute('cy', by); }
+        if (hTR) { hTR.setAttribute('cx', bx + bw); hTR.setAttribute('cy', by); }
+        if (hBR) { hBR.setAttribute('cx', bx + bw); hBR.setAttribute('cy', by + bh); }
+        if (hBL) { hBL.setAttribute('cx', bx); hBL.setAttribute('cy', by + bh); }
       });
-
-      SVGApp.dom.handleTL.setAttribute('cx', bx);
-      SVGApp.dom.handleTL.setAttribute('cy', by);
-
-      SVGApp.dom.handleTR.setAttribute('cx', bx + bw);
-      SVGApp.dom.handleTR.setAttribute('cy', by);
-
-      SVGApp.dom.handleBR.setAttribute('cx', bx + bw);
-      SVGApp.dom.handleBR.setAttribute('cy', by + bh);
-
-      SVGApp.dom.handleBL.setAttribute('cx', bx);
-      SVGApp.dom.handleBL.setAttribute('cy', by + bh);
     }
   },
 
@@ -729,11 +826,12 @@ SVGApp.canvas = {
   },
 
   /**
-   * حساب مسافة التباعد بين الكلمة والشكل وعرضها في شريط المعلومات
+   * حساب مسافة التباعد بين الكلمة والشكل المحدد وعرضها في شريط المعلومات
    */
   updateSeparationDistance() {
     const showText = (SVGApp.dom.textGroup.style.display !== 'none');
-    const showShape = (SVGApp.dom.shapeGroup.style.display !== 'none');
+    const shapesList = SVGApp.state.shapes || [];
+    const showShape = (SVGApp.dom.shapeGroup.style.display !== 'none' && shapesList.length > 0);
 
     if (!showText || !showShape) {
       SVGApp.dom.infoSep.style.display = 'none';
@@ -742,8 +840,19 @@ SVGApp.canvas = {
     }
 
     try {
+      const sel = (SVGApp.shapes && SVGApp.shapes.getSelectedShape) ? SVGApp.shapes.getSelectedShape() : shapesList[0];
+      const selGroup = sel
+        ? SVGApp.dom.shapeGroup.querySelector('.shape-item-group[data-shape-id="' + sel.id + '"]')
+        : SVGApp.dom.shapeGroup.querySelector('.shape-item-group');
+      const selBoxEl = selGroup ? selGroup.querySelector('.shape-selection-box') : null;
+
+      if (!selBoxEl) {
+        SVGApp.dom.infoSep.style.display = 'none';
+        return;
+      }
+
       const b1 = SVGApp.dom.textSelectionBox.getBoundingClientRect();
-      const b2 = SVGApp.dom.shapeSelectionBox.getBoundingClientRect();
+      const b2 = selBoxEl.getBoundingClientRect();
 
       const ctm = SVGApp.dom.previewSvg.getScreenCTM();
       const pxScale = ctm ? ctm.a : 1.0;
@@ -779,8 +888,12 @@ SVGApp.canvas = {
    */
   resetLayout() {
     const pos = SVGApp.dom.shapePosition.value;
+    const shapesList = SVGApp.state.shapes || [];
 
     SVGApp.state.shapeScaleRatio = 1.0;
+    shapesList.forEach(sh => {
+      sh.scaleRatio = 1.0;
+    });
     if (SVGApp.dom.shapeScaleVal) SVGApp.dom.shapeScaleVal.textContent = '100%';
     if (SVGApp.dom.shapeScaleSlider) SVGApp.dom.shapeScaleSlider.value = 100;
 
@@ -788,22 +901,64 @@ SVGApp.canvas = {
     this.updateTextAndShapeElements();
 
     const tb = this.getTextBBox();
-    const sb = this.getShapeBBox();
     const gap = 30;
 
     SVGApp.state.textRelX = 0;
     SVGApp.state.textRelY = 0;
-    SVGApp.state.shapeRelX = 0;
-    SVGApp.state.shapeRelY = 0;
 
-    if (pos === 'right') {
-      SVGApp.state.shapeRelX = (tb.x + tb.width) - sb.x + gap;
-    } else if (pos === 'left') {
-      SVGApp.state.shapeRelX = tb.x - (sb.x + sb.width) - gap;
-    } else if (pos === 'top') {
-      SVGApp.state.shapeRelY = tb.y - (sb.y + sb.height) - gap;
-    } else if (pos === 'bottom') {
-      SVGApp.state.shapeRelY = (tb.y + tb.height) - sb.y + gap;
+    let rightEdge = tb.x + tb.width;
+    let leftEdge = tb.x;
+    let topEdge = tb.y;
+    let bottomEdge = tb.y + tb.height;
+
+    shapesList.forEach((sh, idx) => {
+      const sb = sh.localBox || { x: -50, y: -50, width: 100, height: 100 };
+      sh.relX = 0;
+      sh.relY = 0;
+
+      if (pos === 'only') {
+        sh.relX = idx * (sb.width + gap);
+        sh.relY = 0;
+      } else if (pos === 'right') {
+        if (idx === 0) {
+          sh.relX = rightEdge - sb.x + gap;
+          rightEdge = sh.relX + sb.x + sb.width;
+        } else if (idx === 1) {
+          sh.relX = leftEdge - (sb.x + sb.width) - gap;
+          leftEdge = sh.relX + sb.x;
+        } else if (idx % 2 === 0) {
+          sh.relX = rightEdge - sb.x + gap;
+          rightEdge = sh.relX + sb.x + sb.width;
+        } else {
+          sh.relX = leftEdge - (sb.x + sb.width) - gap;
+          leftEdge = sh.relX + sb.x;
+        }
+      } else if (pos === 'left') {
+        if (idx === 0) {
+          sh.relX = leftEdge - (sb.x + sb.width) - gap;
+          leftEdge = sh.relX + sb.x;
+        } else if (idx === 1) {
+          sh.relX = rightEdge - sb.x + gap;
+          rightEdge = sh.relX + sb.x + sb.width;
+        } else if (idx % 2 === 0) {
+          sh.relX = leftEdge - (sb.x + sb.width) - gap;
+          leftEdge = sh.relX + sb.x;
+        } else {
+          sh.relX = rightEdge - sb.x + gap;
+          rightEdge = sh.relX + sb.x + sb.width;
+        }
+      } else if (pos === 'top') {
+        sh.relY = topEdge - (sb.y + sb.height) - gap;
+        sh.relX = (idx === 0) ? 0 : ((idx % 2 === 1 ? 1 : -1) * Math.ceil(idx / 2) * (sb.width + gap));
+      } else if (pos === 'bottom') {
+        sh.relY = bottomEdge - sb.y + gap;
+        sh.relX = (idx === 0) ? 0 : ((idx % 2 === 1 ? 1 : -1) * Math.ceil(idx / 2) * (sb.width + gap));
+      }
+    });
+
+    if (shapesList.length > 0) {
+      SVGApp.state.shapeRelX = shapesList[0].relX;
+      SVGApp.state.shapeRelY = shapesList[0].relY;
     }
 
     this.applyLayoutAndManualDimensions();

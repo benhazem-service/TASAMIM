@@ -10,7 +10,22 @@ SVGApp.state = {
   // الأشكال المرفوعة من المستخدم
   customShapes: {},
 
-  // الشكل النشط حالياً
+  // قائمة الأشكال المضافة في التصميم (يمكن إضافة أكثر من شكل أو تكراره وتحريك كل شكل على حدة)
+  shapes: [
+    {
+      id: 'shape_1',
+      key: 'crescent',
+      relX: 140,
+      relY: 0,
+      scaleRatio: 1.0,
+      localBox: { x: -50, y: -50, width: 100, height: 100 },
+      innerTransform: ''
+    }
+  ],
+  selectedShapeId: 'shape_1',
+  nextShapeUid: 2,
+
+  // الشكل النشط حالياً (للتوافق السريع)
   activeShapeKey: 'crescent',
 
   // الخطوط المفضلة (محفوظة في التخزين المحلي)

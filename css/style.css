@@ -991,7 +991,9 @@ body.is-resizing .resize-handle {
 }
 
 #handleTR,
-#handleBL {
+#handleBL,
+.handle-TR,
+.handle-BL {
   cursor: nesw-resize;
 }
 

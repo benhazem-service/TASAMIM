@@ -161,7 +161,7 @@ SVGApp.orders = {
 
     if (!cleanPhone || cleanPhone.length < 8) {
       if (SVGApp.dom.customerStatusMsg) {
-        SVGApp.dom.customerStatusMsg.textContent = '⚠ يرجى إدخال رقم هاتفك الصحيح أولاً (مثال: 0662065072)';
+        SVGApp.dom.customerStatusMsg.textContent = '⚠ يرجى إدخال رقم هاتفك الصحيح أولاً';
         SVGApp.dom.customerStatusMsg.style.color = '#dc2626';
         SVGApp.dom.customerStatusMsg.style.display = 'block';
       }
@@ -178,9 +178,16 @@ SVGApp.orders = {
 
     const activeShape = SVGApp.state.activeShapeKey;
     const customShapeContent = SVGApp.state.customShapes[activeShape] || null;
+    const shapesList = (SVGApp.state.shapes || []).map(s => ({
+      id: s.id,
+      key: s.key,
+      relX: s.relX,
+      relY: s.relY,
+      scaleRatio: s.scaleRatio || 1.0
+    }));
 
     const payload = {
-      version: 1,
+      version: 2,
       orderId: orderId,
       customerPhone: cleanPhone,
       seqCode: seqCode,
@@ -190,6 +197,8 @@ SVGApp.orders = {
         font: SVGApp.dom.fontSelect.value,
         activeShapeKey: activeShape,
         customShapeContent: customShapeContent,
+        customShapes: SVGApp.state.customShapes || {},
+        shapes: shapesList,
         shapePosition: SVGApp.dom.shapePosition.value,
         manualWidth_cm: SVGApp.state.manualWidth_cm,
         manualHeight_cm: SVGApp.state.manualHeight_cm,
@@ -203,49 +212,26 @@ SVGApp.orders = {
     };
 
     const encryptedText = this.encryptPayload(payload);
-    const filename = orderId + '.svge';
 
-    // 1. تجربة Web Share API (خاصة بالهواتف لمشاركة الملف مباشرة داخل تطبيق WhatsApp دون الحاجة لفتحه يدوياً)
-    let sharedDirectly = false;
-    if (navigator.canShare && window.File) {
-      try {
-        const fileObj = new File([encryptedText], filename, { type: 'application/octet-stream' });
-        const shareData = {
-          files: [fileObj],
-          title: 'طلب تصميم: ' + orderId,
-          text: 'طلب تصميم فيكتور جديد:\n📄 رقم الملف: ' + orderId + '\n📱 هاتف: ' + cleanPhone + '\n📏 القياس: ' + SVGApp.state.manualWidth_cm.toFixed(1) + ' × ' + SVGApp.state.manualHeight_cm.toFixed(1) + ' cm'
-        };
-
-        if (navigator.canShare(shareData)) {
-          await navigator.share(shareData);
-          sharedDirectly = true;
-          if (SVGApp.dom.customerStatusMsg) {
-            SVGApp.dom.customerStatusMsg.innerHTML = '✓ تم إرسال ومشاركة الملف المشفر بنجاح عبر الواتساب!';
-            SVGApp.dom.customerStatusMsg.style.color = '#15803d';
-            SVGApp.dom.customerStatusMsg.style.display = 'block';
-          }
-          return;
-        }
-      } catch (shareErr) {
-        // إذا ألغى المستخدم المشاركة أو لم تكتمل ننتقل للتحميل والرابط التلقائي
-      }
-    }
-
-    // 2. الطريقة القياسية (تنزيل الملف على الهاتف + فتح محادثة الواتساب جاهزة)
+    // 1. تنزيل الملف المشفر على الجهاز/الهاتف
     const savedFilename = this.downloadEncryptedFile(encryptedText, orderId);
 
     if (SVGApp.dom.customerStatusMsg) {
       SVGApp.dom.customerStatusMsg.innerHTML =
-        '⬇ <b>تم حفظ الملف في هاتفك: ' + savedFilename + '</b><br>' +
-        '📲 اضغط على زر المرفقات 📎 في محادثة الواتساب وأرسل الملف المحفوظ للمدير.';
+        '⬇ <b>تم حفظ الملف في جهازك: ' + savedFilename + '</b><br>' +
+        '📲 تم فتح محادثة واتساب المطبعة تلقائياً — أرفق الملف المحفوظ 📎 وأرسله.';
       SVGApp.dom.customerStatusMsg.style.color = '#15803d';
       SVGApp.dom.customerStatusMsg.style.display = 'block';
     }
 
-    // تجهيز رقم واتساب المطبعة المستلم
-    const savedAdminPhone = localStorage.getItem('svgAdminWhatsApp');
-    const defaultPrintPhone = (window.SVGApp && SVGApp.DEFAULT_PRINT_SHOP_WHATSAPP) || '212662065072';
-    const printShopWhatsApp = this.cleanPhoneNumber(savedAdminPhone || defaultPrintPhone).replace(/^\+/, '');
+    // 2. تجهيز رقم واتساب المطبعة المستلم وفتح المحادثة تلقائياً على الرقم (0771018442 -> 212771018442)
+    let savedAdminPhone = localStorage.getItem('svgAdminWhatsApp');
+    if (savedAdminPhone === '212662065072' || savedAdminPhone === '0662065072') {
+      savedAdminPhone = '';
+      localStorage.removeItem('svgAdminWhatsApp');
+    }
+    const defaultPrintPhone = (window.SVGApp && SVGApp.DEFAULT_PRINT_SHOP_WHATSAPP) || '0771018442';
+    const printShopWhatsApp = this.formatWhatsAppTarget(savedAdminPhone || defaultPrintPhone);
 
     const msgLines = [
       'مرحباً، أود إرسال طلب تصميم فيكتور جديد للمطبعة:',
@@ -255,11 +241,26 @@ SVGApp.orders = {
       '📎 (يرجى إرفاق الملف المشفر المحفوظ: ' + savedFilename + ')'
     ];
     const encodedMsg = encodeURIComponent(msgLines.join('\n'));
-    const waUrl = printShopWhatsApp
-      ? ('https://wa.me/' + printShopWhatsApp + '?text=' + encodedMsg)
-      : ('https://api.whatsapp.com/send?text=' + encodedMsg);
+    const waUrl = 'https://wa.me/' + printShopWhatsApp + '?text=' + encodedMsg;
 
-    window.open(waUrl, '_blank');
+    const win = window.open(waUrl, '_blank');
+    if (!win) {
+      window.location.href = waUrl;
+    }
+  },
+
+  /**
+   * تحويل رقم هاتف المطبعة المحلي (مثل 0771018442) إلى الصيغة الدولية للواتساب (212771018442)
+   */
+  formatWhatsAppTarget(phone) {
+    let digits = (phone || '').replace(/[^0-9]/g, '');
+    if (!digits) return '212771018442';
+    if (digits.startsWith('00')) {
+      digits = digits.slice(2);
+    } else if (digits.startsWith('0') && digits.length === 10) {
+      digits = '212' + digits.slice(1);
+    }
+    return digits;
   },
 
   /**
@@ -330,21 +331,49 @@ SVGApp.orders = {
             SVGApp.state.manualHeight_cm = d.manualHeight_cm;
             SVGApp.dom.manualHeightInput.value = d.manualHeight_cm;
           }
-          if (d.activeShapeKey) {
-            if (d.customShapeContent) {
-              SVGApp.state.customShapes[d.activeShapeKey] = d.customShapeContent;
-            }
-            SVGApp.state.activeShapeKey = d.activeShapeKey;
-            document.querySelectorAll('.shape-btn').forEach(b => {
-              b.classList.toggle('active', b.dataset.shape === d.activeShapeKey);
-            });
+          if (d.customShapes && typeof d.customShapes === 'object') {
+            Object.assign(SVGApp.state.customShapes, d.customShapes);
           }
+          if (d.activeShapeKey && d.customShapeContent) {
+            SVGApp.state.customShapes[d.activeShapeKey] = d.customShapeContent;
+          }
+
+          if (Array.isArray(d.shapes)) {
+            SVGApp.state.shapes = d.shapes.map((s, i) => ({
+              id: s.id || ('shape_' + (i + 1)),
+              key: s.key || 'crescent',
+              relX: s.relX || 0,
+              relY: s.relY || 0,
+              scaleRatio: s.scaleRatio || 1.0,
+              localBox: { x: -50, y: -50, width: 100, height: 100 },
+              innerTransform: ''
+            }));
+            SVGApp.state.selectedShapeId = SVGApp.state.shapes.length > 0 ? SVGApp.state.shapes[0].id : null;
+          } else if (d.activeShapeKey && d.activeShapeKey !== 'none') {
+            SVGApp.state.shapes = [{
+              id: 'shape_1',
+              key: d.activeShapeKey,
+              relX: d.shapeRelX || 0,
+              relY: d.shapeRelY || 0,
+              scaleRatio: d.shapeScaleRatio || 1.0,
+              localBox: { x: -50, y: -50, width: 100, height: 100 },
+              innerTransform: ''
+            }];
+            SVGApp.state.selectedShapeId = 'shape_1';
+          } else {
+            SVGApp.state.shapes = [];
+            SVGApp.state.selectedShapeId = null;
+          }
+
           SVGApp.state.shapeScaleRatio = d.shapeScaleRatio || 1.0;
           SVGApp.state.textRelX = d.textRelX || 0;
           SVGApp.state.textRelY = d.textRelY || 0;
           SVGApp.state.shapeRelX = d.shapeRelX || 0;
           SVGApp.state.shapeRelY = d.shapeRelY || 0;
 
+          if (SVGApp.shapes && SVGApp.shapes.syncStateAndUI) {
+            SVGApp.shapes.syncStateAndUI();
+          }
           SVGApp.canvas._cachedTextKey = null;
           SVGApp.canvas.updateTextAndShapeElements();
           SVGApp.canvas.applyLayoutAndManualDimensions();
@@ -453,7 +482,12 @@ SVGApp.orders = {
 
     // إعدادات رقم واتساب المطبعة وتصفير العداد
     if (SVGApp.dom.adminWhatsAppInput) {
-      const currentShopPhone = localStorage.getItem('svgAdminWhatsApp') || (window.SVGApp && SVGApp.DEFAULT_PRINT_SHOP_WHATSAPP) || '212662065072';
+      let savedShopPhone = localStorage.getItem('svgAdminWhatsApp');
+      if (savedShopPhone === '212662065072' || savedShopPhone === '0662065072') {
+        savedShopPhone = '';
+        localStorage.removeItem('svgAdminWhatsApp');
+      }
+      const currentShopPhone = savedShopPhone || (window.SVGApp && SVGApp.DEFAULT_PRINT_SHOP_WHATSAPP) || '0771018442';
       SVGApp.dom.adminWhatsAppInput.value = currentShopPhone;
       SVGApp.dom.adminWhatsAppInput.addEventListener('input', () => {
         const val = SVGApp.dom.adminWhatsAppInput.value.trim();
